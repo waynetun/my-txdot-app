@@ -18,49 +18,47 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------- OUTER CENTER (creates margins) ----------
-left, container, right = st.columns([1, 4, 1])
+left, container, right = st.columns([0.5, 5, 0.5])
 
 with container:
 
     # ---------- INNER FIXED WIDTH ----------
-    inner_left, inner_center, inner_right = st.columns([1, 10, 1])
+    inner_left, inner_center, inner_right = st.columns([0.5, 11, 0.5])
 
     with inner_center:
 
         # ---------- HEADER ----------
-        col1, col2 = st.columns([1, 3.5])
+        col1, col2 = st.columns([1, 4])
 
         with col1:
             st.image("txdot-logo-1000x500.png", width=180)
 
         with col2:
+            # Removed the fixed 100px height to prevent text clipping
             st.markdown("""
-            <div style="display: flex; align-items: center; height: 100px;">
-                <h1 style="margin: 0; font-size: 2rem; font-weight: bold; color: #000000; line-height: 1.2;">
-                    TxDOT - Proactive<br>Construction Work Item<br>Identifier (Pro‑CWII)
+            <div style="display: flex; align-items: center; padding-top: 10px;">
+                <h1 style="margin: 0; font-size: 2.2rem; font-weight: bold; color: #000000; line-height: 1.2;">
+                    TxDOT - Proactive Construction Work Item Identifier (Pro‑CWII)
                 </h1>
             </div>
             """, unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROWS ----------
-        # Row 1: Home, Help, Sample
-        row1_col1, row1_col2, row1_col3 = st.columns(3)
-        with row1_col1:
-            st.image("SampleCopilot.png", use_container_width=True) # Assuming this is the Home/Blue icon based on your first screenshot
-        with row1_col2:
-            st.image("HelpCoPilot.png", use_container_width=True)
-        with row1_col3:
+        # ---------- NAVIGATION ICON ROW (ALL IN ONE LINE) ----------
+        icon_cols = st.columns(6)
+        
+        with icon_cols[0]:
             st.image("SampleCopilot.png", use_container_width=True)
-
-        # Row 2: Find Similar Projects, Identify Missing Items, Verify Major Quantities
-        row2_col1, row2_col2, row2_col3 = st.columns(3)
-        with row2_col1:
+        with icon_cols[1]:
+            st.image("HelpCoPilot.png", use_container_width=True)
+        with icon_cols[2]:
+            st.image("SampleCopilot.png", use_container_width=True)
+        with icon_cols[3]:
             st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
-        with row2_col2:
+        with icon_cols[4]:
             st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
-        with row2_col3:
+        with icon_cols[5]:
             st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -72,7 +70,6 @@ with container:
         </h2>
         """, unsafe_allow_html=True)
         
-        # Combined text block to ensure pixel-perfect line spacing
         st.markdown("""
 The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities in construction and maintenance projects. By analyzing historical project data and using advanced machine learning algorithms, Pro-CWII helps you:
 
