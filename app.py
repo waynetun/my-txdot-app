@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Fixed CSS Injector with explicitly targeted classes
+# Corrected CSS Injector targeting all specific wrappers with a SINGLE shake
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -11,26 +11,22 @@ st.markdown("""
         padding-bottom: 2rem;
     }
 
-    /* Define the Shake Animation Keyframes */
-    @keyframes shake-animation {
-        0% { transform: translate(1px, 1px) rotate(0deg); }
-        10% { transform: translate(-1px, -2px) rotate(-1deg); }
-        20% { transform: translate(-3px, 0px) rotate(1deg); }
-        30% { transform: translate(3px, 2px) rotate(0deg); }
-        40% { transform: translate(1px, -1px) rotate(1deg); }
-        50% { transform: translate(-1px, 2px) rotate(-1deg); }
-        60% { transform: translate(-3px, 1px) rotate(0deg); }
-        70% { transform: translate(3px, 1px) rotate(-1deg); }
-        80% { transform: translate(-1px, -1px) rotate(1deg); }
-        90% { transform: translate(1px, 2px) rotate(0deg); }
-        100% { transform: translate(1px, -2px) rotate(-1deg); }
+    /* Define the Single Shake Animation Keyframes (Quick & subtle) */
+    @keyframes single-shake-animation {
+        0% { transform: translate(0px, 0px) rotate(0deg); }
+        15% { transform: translate(-2px, 1px) rotate(-1deg); }
+        30% { transform: translate(2px, -1px) rotate(1deg); }
+        45% { transform: translate(-2px, -1px) rotate(-1deg); }
+        60% { transform: translate(2px, 1px) rotate(1deg); }
+        75% { transform: translate(-1px, 0px) rotate(0deg); }
+        100% { transform: translate(0px, 0px) rotate(0deg); }
     }
 
-    /* Apply the shake effect exclusively on hover to marked elements */
-    .shaky-item:hover {
+    /* Apply the shake effect ONLY ONCE on hover to marked elements */
+    .shaky-item:hover, .shaky-icon:hover {
         display: block;
-        animation: shake-animation 0.5s;
-        animation-iteration-count: infinite;
+        animation: single-shake-animation 0.4s; /* Set duration */
+        animation-iteration-count: 1; /* Key change: Run only once per hover */
         cursor: pointer;
     }
     </style>
@@ -63,37 +59,37 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROW WITH TARGETED WRAPPERS ----------
+        # ---------- NAVIGATION ICON ROW WITH SHAKY-ICON WRAPPERS ----------
         icon_cols = st.columns(6)
         
-        # Wrapping each column's asset inside our verified shaky class wrapper
+        # Wrapping each column's asset inside our specific sneaky class wrapper
         with icon_cols[0]:
-            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
             st.image("HomeCopilot.png", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
             
         with icon_cols[1]:
-            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
             st.image("HelpCoPilot.png", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
             
         with icon_cols[2]:
-            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
             st.image("SampleCopilot.png", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
             
         with icon_cols[3]:
-            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
             st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
             
         with icon_cols[4]:
-            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
             st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
             
         with icon_cols[5]:
-            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
             st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
