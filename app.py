@@ -16,56 +16,86 @@ with center:
     with col2:
         st.markdown("""
         <h2 style="margin-top:20px;">
-        TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)
+        TxDOT - Proactive Construction Work Item Identifier (Pro‑CWII)
         </h2>
         """, unsafe_allow_html=True)
 
     st.markdown("###")
 
-    # ---------- ICON GRID ----------
+    # ---------- ICON ROW ----------
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.image("SampleCopilot.png", width=120)
-        st.markdown("<div style='text-align:center;'>Sample</div>", unsafe_allow_html=True)
+        st.image("SampleCopilot.png", width=110)
 
     with col2:
-        st.image("HelpCoPilot.png", width=120)
-        st.markdown("<div style='text-align:center;'>Help</div>", unsafe_allow_html=True)
+        st.image("HelpCoPilot.png", width=110)
 
     with col3:
-        st.image("FindSimilarProjectCoPilot.png", width=120)
-        st.markdown("<div style='text-align:center;'>Find Similar Projects</div>", unsafe_allow_html=True)
+        st.image("FindSimilarProjectCoPilot.png", width=110)
 
     with col4:
-        st.image("IdentifyMissingItemsCopilot.png", width=120)
-        st.markdown("<div style='text-align:center;'>Identify Missing Items</div>", unsafe_allow_html=True)
+        st.image("IdentifyMissingItemsCopilot.png", width=110)
 
     with col5:
-        st.image("VerifyMajorQuantitiesCoPilot.png", width=120)
-        st.markdown("<div style='text-align:center;'>Verify Major Quantities</div>", unsafe_allow_html=True)
+        st.image("VerifyMajorQuantitiesCoPilot.png", width=110)
 
-    # ---------- SPACE ----------
     st.markdown("###")
 
-    # ---------- CONTENT ----------
+    # ---------- WELCOME ----------
     st.markdown("## Welcome")
     st.markdown("---")
 
     st.write("""
-    The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities in construction and maintenance projects.
+    The TxDOT Proactive Construction Work Item Identifier (Pro‑CWII) is a decision-support tool developed to assist engineers and project managers in identifying potential missing work items and verifying major quantities in construction and maintenance projects.
     """)
 
     st.write("""
-    By analyzing historical project data and using advanced machine learning algorithms, Pro-CWII helps you:
+    Using historical project data and advanced analytics, Pro‑CWII supports improved planning, cost control, and accuracy by enabling users to:
     """)
 
     st.markdown("""
-    1. Identify similar past projects for better decision-making  
-    2. Predict potential missing work items before they become costly change orders  
-    3. Verify major quantities to ensure accurate project planning and resource allocation  
+    1. Identify similar past projects to support decision-making  
+    2. Detect potential missing work items before change orders occur  
+    3. Verify major quantities to improve estimate reliability  
     """)
 
     st.write("""
-    This tool is specifically designed for Texas Department of Transportation (TxDOT) projects and uses TxDOT's standard specifications.
+    This tool is designed specifically for Texas Department of Transportation (TxDOT) projects and aligns with TxDOT standard specifications and item codes.
+    """)
+
+    # ---------- HOW TO USE ----------
+    st.markdown("## How to Use This Tool")
+    st.markdown("---")
+
+    st.markdown("### 1. Prepare Your Data")
+    st.markdown("""
+    - Download the sample template  
+    - Include item codes, quantities, and unit prices  
+    - Save your file as Excel (.xlsx)  
+    """)
+
+    st.markdown("### 2. Select an Analysis Option")
+    st.markdown("""
+    - Find Similar Projects  
+    - Identify Missing Work Items  
+    - Verify Major Quantities  
+    """)
+
+    st.markdown("### 3. Review Results")
+    st.markdown("""
+    - Upload your Excel file  
+    - Review analysis results  
+    - Download detailed reports  
+    """)
+
+    st.markdown("### Need Help?")
+    st.markdown("""
+    - Visit the Help page  
+    - Review user documentation  
+    - Check troubleshooting guidance  
+    """)
+
+    st.write("""
+    For best results, ensure your input data follows the required template format.
     """)
