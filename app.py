@@ -2,24 +2,17 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Custom CSS to fix button widths, text alignment, and spacing
+# Custom CSS to handle spacing and layout structure
 st.markdown("""
     <style>
-    /* Force all navigation buttons to be uniform and centered */
-    div.stButton > button {
-        width: 100%;
-        font-weight: 500;
-        border-radius: 4px;
-        padding: 0.5rem;
-    }
-    /* Set specific background color for the Home button to match the screenshot */
-    div.stButton > button:first-child {
-        border-color: #1f77b4;
-    }
-    /* Reduce vertical padding between blocks for tighter spacing */
+    /* Reduce vertical padding between blocks for tighter, consistent spacing */
     .block-container {
         padding-top: 2rem;
         padding-bottom: 2rem;
+    }
+    /* Eliminate extra default bottom margins from image blocks in the icon grid */
+    div[data-testid="stImage"] {
+        margin-bottom: 0rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -51,24 +44,24 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION BUTTON ROWS ----------
+        # ---------- NAVIGATION ICON ROWS ----------
         # Row 1: Home, Help, Sample
         row1_col1, row1_col2, row1_col3 = st.columns(3)
         with row1_col1:
-            st.button("🏠 Home", key="btn_home")
+            st.image("SampleCopilot.png", use_container_width=True) # Assuming this is the Home/Blue icon based on your first screenshot
         with row1_col2:
-            st.button("❓ Help", key="btn_help")
+            st.image("HelpCoPilot.png", use_container_width=True)
         with row1_col3:
-            st.button("📄 Sample", key="btn_sample")
+            st.image("SampleCopilot.png", use_container_width=True)
 
         # Row 2: Find Similar Projects, Identify Missing Items, Verify Major Quantities
         row2_col1, row2_col2, row2_col3 = st.columns(3)
         with row2_col1:
-            st.button("🔎 Find Similar Projects", key="btn_find")
+            st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
         with row2_col2:
-            st.button("📊 Identify Missing Items", key="btn_missing")
+            st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
         with row2_col3:
-            st.button("🧱 Verify Major Quantities", key="btn_verify")
+            st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
