@@ -2,82 +2,83 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# ---------- CSS (THIS MAKES IT LOOK PROFESSIONAL) ----------
+# ---------------- CSS ----------------
 st.markdown("""
 <style>
 body {
     background-color: white;
 }
 
-/* container */
-.main-container {
-    width: 90%;
-    margin: auto;
-}
-
-/* header */
+/* Header */
 .header {
     display: flex;
     align-items: center;
     gap: 30px;
 }
 
-.header img {
-    width: 140px;
+/* Logo */
+.logo {
+    width: 200px;
 }
 
+/* Title */
 .title {
     font-size: 42px;
     font-weight: 600;
 }
 
-/* icon grid */
+/* Icon row */
 .icon-row {
     display: flex;
     gap: 20px;
-    margin-top: 30px;
+    margin-top: 40px;
 }
 
-/* icon cards */
+/* Glass cards */
 .card {
     width: 140px;
     height: 140px;
-    border-radius: 16px;
-    background: #f3f4f6;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(200,200,200,0.6);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
 }
 
-/* HOME special */
+/* Home highlight */
 .card-home {
-    background: linear-gradient(135deg, #0b5394, #134f83);
+    background: linear-gradient(135deg, #005ea2, #0a4c8a);
     color: white;
 }
 
-/* icons */
-.icon {
-    font-size: 40px;
+/* Icon image */
+.icon-img {
+    width: 48px;
+    height: 48px;
     margin-bottom: 10px;
 }
 
-/* text */
+/* Text */
 .card-text {
-    font-size: 16px;
+    font-size: 15px;
     text-align: center;
+}
+
+/* Welcome */
+.welcome {
+    margin-top: 50px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-# ---------- HEADER ----------
+# ---------------- HEADER ----------------
 st.markdown("""
-<div class="main-container">
-
 <div class="header">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/TxDOT_logo.svg/512px-TxDOT_logo.svg.png">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/TxDOT_logo.svg" class="logo">
     <div class="title">
         TxDOT – Proactive Construction Work Item Identifier (Pro‑CWII)
     </div>
@@ -85,32 +86,32 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ---------- ICON ROW ----------
+# ---------------- ICONS ----------------
 st.markdown("""
 <div class="icon-row">
 
 <div class="card card-home">
-    <div class="icon">🏠</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/1946/1946436.png" class="icon-img">
     <div class="card-text">Home</div>
 </div>
 
 <div class="card">
-    <div class="icon">❓</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" class="icon-img">
     <div class="card-text">Help</div>
 </div>
 
 <div class="card">
-    <div class="icon">🧪</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/2906/2906274.png" class="icon-img">
     <div class="card-text">Sample</div>
 </div>
 
 <div class="card">
-    <div class="icon">▦</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/681/681494.png" class="icon-img">
     <div class="card-text">Identify Missing Items</div>
 </div>
 
 <div class="card">
-    <div class="icon">✅</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" class="icon-img">
     <div class="card-text">Verify Major Quantities</div>
 </div>
 
@@ -118,23 +119,25 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ---------- WELCOME SECTION ----------
+# ---------------- WELCOME ----------------
 st.markdown("""
-<h2 style="margin-top:40px;">Welcome</h2>
+<div class="welcome">
+
+<h2>Welcome</h2>
 <hr>
 
 <p>
-The TxDOT – Proactive Construction Work Item Identifier (Pro‑CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities.
+The TxDOT – Proactive Construction Work Item Identifier (Pro‑CWII) is a powerful tool designed to help engineers and project managers predict and identify missing work items and verify major quantities.
 </p>
 
 <ol>
 <li>Identify similar past projects for better decision-making.</li>
-<li>Predict potential missing items before costly change orders.</li>
-<li>Verify major quantities to ensure accurate project planning.</li>
+<li>Predict missing work items before costly change orders.</li>
+<li>Verify major quantities for accurate planning.</li>
 </ol>
 
 <p>
-This tool is specifically designed for Texas Department of Transportation (TxDOT) projects.
+Designed specifically for Texas Department of Transportation (TxDOT) projects.
 </p>
 
 </div>
