@@ -1,11 +1,11 @@
 import streamlit as st
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="TxDOT App", layout="wide")
 
 # Title
 st.title("TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)")
 
-# Buttons row
+# Buttons (same size)
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
@@ -26,8 +26,5 @@ with col5:
 # Welcome section
 st.markdown("## Welcome")
 
-st.write("""
-This is your custom TxDOT app.
-You will build your functions here.
-""")
+st.write("This is your TxDOT tool home page.")
 ``
