@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Custom CSS targeting layout blocks, text classes, and the floating Wayne-AI widget
+# Custom CSS targeting layout blocks, text classes, and fixing the popover to the bottom right
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -37,39 +37,29 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- FLOATING WAYNE-AI CORNER WIDGET ---------- */
-    /* Sticky bottom-right parent container box targeting */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.wayne-floating-box) {
+    /* ---------- FLOATING CORNER BUTTON ---------- */
+    /* Snaps the Streamlit popover button directly to the fixed bottom-right corner */
+    div.floating-popover-container {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 340px;
-        height: 450px;
-        background-color: #ffffff !important;
-        border-radius: 12px !important;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2) !important;
-        border: 1px solid #e0e0e0 !important;
-        z-index: 999999 !important;
-        padding: 10px !important;
-        overflow: hidden !important;
-    }
-
-    /* Header styling inside the floating element */
-    .wayne-header {
-        background-color: #1f77b4;
-        color: white;
-        padding: 10px;
-        border-radius: 8px 8px 0 0;
-        font-weight: bold;
-        text-align: center;
-        margin: -10px -10px 10px -10px;
+        bottom: 24px;
+        right: 24px;
+        z-index: 999999;
     }
     
-    /* Make the conversation wrapper scroll smoothly within limits */
-    div.wayne-chat-history {
-        height: 320px;
-        overflow-y: auto;
-        padding-right: 5px;
+    /* Style the popover toggle button to look like a floating chat action element */
+    div.floating-popover-container button {
+        background-color: #1f77b4 !important;
+        color: white !important;
+        border-radius: 50px !important;
+        padding: 0.6rem 1.5rem !important;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2) !important;
+        border: none !important;
+    }
+    
+    /* Give the open chat layout box fixed width dimensions so it feels like a native panel */
+    div[data-testid="stPopoverBody"] {
+        width: 360px !important;
+        max-height: 500px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -180,27 +170,23 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- FLOATING CORNER INTERACTIVE CHAT CONTAINER ----------
-# A standard st.container() injected with our tracking CSS class acts as the pinned viewport box
-with st.container():
-    # Anchor target signature element for CSS selector tracking
-    st.markdown('<div class="wayne-floating-box"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="wayne-header">🤖 Wayne-AI</div>', unsafe_allow_html=True)
+# ---------- INTERACTIVE FLOATING CORNER POPOVER ----------
+# Injecting the open popover container element inside our custom fixed floating wrapper class zone
+st.markdown('<div class="floating-popover-container">', unsafe_allow_html=True)
+with st.popover("💬 Chat with Wayne-AI"):
+    st.markdown("### 🤖 Wayne-AI Workspace")
     
-    # Internal box hosting messages
-    st.markdown('<div class="wayne-chat-history">', unsafe_allow_html=True)
+    # Render historical conversation streams clearly inside the popover window context
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
             st.write(message["content"])
-    st.markdown('</div>', unsafe_allow_html=True)
             
-    # Input terminal positioned at the base of our floating container setup
+    # Capture input values reliably without layout canvas overflow
     if user_input := st.chat_input("Ask Wayne-AI..."):
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         
-        # Build analysis string
         copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
         
-        # Re-trigger page paint cycle to cleanly render newest additions immediately
         st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
