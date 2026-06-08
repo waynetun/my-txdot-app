@@ -41,7 +41,7 @@ st.markdown("""
     /* Fixed viewport placement - raised slightly from absolute bottom */
     div.raised-floating-bot {
         position: fixed;
-        bottom: 80px; /* Raised off the absolute floor */
+        bottom: 80px; 
         right: 30px;
         z-index: 999999;
     }
@@ -59,13 +59,13 @@ st.markdown("""
     
     /* Explicit layout containment wrapper for the active open chat history container */
     div[data-testid="stPopoverBody"] {
-        width: 360px !important;
+        width: 380px !important;
         max-height: 480px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize Session State tracking for the Wayne-AI conversational history
+# Initialize Session State tracking for the Wayne-AI conversational history securely
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
         {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
@@ -172,22 +172,28 @@ with container:
 
 
 # ---------- INTERACTIVE FLOATING RAISED POPOVER ----------
-# Placing inside a styled wrapper to offset the bottom coordinates cleanly
 st.markdown('<div class="raised-floating-bot">', unsafe_allow_html=True)
 with st.popover("💬 Chat with Wayne-AI"):
     st.markdown("### 🤖 Wayne-AI Workspace")
     
-    # Render historical conversation log stream
-    for message in st.session_state.chat_history:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-            
+    # Create a container block to handle internal layout updates smoothly
+    chat_container = st.container()
+    
     # Capture input values reliably
-    if user_input := st.chat_input("Ask Wayne-AI..."):
+    user_input = st.chat_input("Ask Wayne-AI...")
+    
+    if user_input:
+        # 1. Instantly append the user message to session state
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         
+        # 2. Build and append the assistant's reply sequence back-to-back
         copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
-        
-        st.rerun()
+
+    # 3. Always render the entire conversation history inside the chat container block
+    with chat_container:
+        for message in st.session_state.chat_history:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+                
 st.markdown('</div>', unsafe_allow_html=True)
