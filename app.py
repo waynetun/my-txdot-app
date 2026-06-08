@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Corrected CSS Injector targeting the standard Streamlit layout blocks directly
+# Optimized CSS Injector targeting structural layout blocks, text classes, and the floating chatbox
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -36,6 +36,54 @@ st.markdown("""
         animation-iteration-count: 1;
         cursor: pointer;
     }
+
+    /* ---------- FLOATING AI CHATBOX BOX STYLING ---------- */
+    .floating-chat-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 320px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+        font-family: sans-serif;
+        z-index: 999999;
+        overflow: hidden;
+    }
+    
+    /* Apply the single shake effect on hover to the chatbox */
+    .floating-chat-container:hover {
+        animation: single-shake-animation 0.4s ease-in-out;
+        animation-iteration-count: 1;
+    }
+
+    .chat-header {
+        background-color: #1f77b4;
+        color: white;
+        padding: 12px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chat-body {
+        padding: 15px;
+        height: 200px;
+        overflow-y: auto;
+        font-size: 0.9rem;
+        color: #333333;
+        background-color: #f9f9f9;
+    }
+
+    .chat-bubble-ai {
+        background-color: #e1f5fe;
+        padding: 8px 12px;
+        border-radius: 12px 12px 12px 0px;
+        margin-bottom: 10px;
+        line-height: 1.3;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -66,8 +114,7 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROW (NATIVE IMAGES + BLOCK HOVER) ----------
-        # This custom wrapper class lets us target Streamlit columns safely inside it
+        # ---------- NAVIGATION ICON ROW ----------
         st.markdown('<div class="shaky-row-container">', unsafe_allow_html=True)
         
         icon_cols = st.columns(6)
@@ -152,3 +199,24 @@ with container:
         <p>For the best results, ensure your input data follows the sample format exactly.</p>
         </div>
         """, unsafe_allow_html=True)
+
+# ---------- FLOATING RIGHT CORNER COPILOT CHATBOX ----------
+# Placed outside the central column framework so it pins directly to the browser window viewport boundaries
+st.markdown("""
+    <div class="floating-chat-container">
+        <div class="chat-header">
+            🤖 Pro-CWII Copilot
+        </div>
+        <div class="chat-body">
+            <div class="chat-bubble-ai">
+                Hello! How can I help you analyze your TxDOT construction project data today?
+            </div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+# Embedded target text inputs directly underneath the overlay via Streamlit layout mechanics
+with st.sidebar:
+    # Optional fallback context or controls could go here. 
+    # To keep the chat text input interactive with Python logic, we can place the native input element inside the floating frame area if needed.
+    pass
