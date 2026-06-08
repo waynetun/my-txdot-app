@@ -14,38 +14,33 @@ with center:
         st.image("txdot-logo-1000x500.png", width=180)
 
     with col2:
-        st.markdown("""
-        <h2 style="margin-top:20px;">
-        TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)
-        </h2>
-        """, unsafe_allow_html=True)
+        st.markdown("<h2>TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)</h2>", unsafe_allow_html=True)
 
     st.markdown("###")
 
-    # ---------- ICON GRID ----------
+    # ---------- ICONS ----------
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.image("Sample_CoPilot.png")
+        st.image("Sample.png", width=120)
         st.markdown("<div style='text-align:center;'>Sample</div>", unsafe_allow_html=True)
 
     with col2:
-        st.image("Help_CoPilot.png")
+        st.image("Help.png", width=120)
         st.markdown("<div style='text-align:center;'>Help</div>", unsafe_allow_html=True)
 
     with col3:
-        st.image("FindSimilarProject_CoPilot.png")
+        st.image("Find_Similar_Projects.png", width=120)
         st.markdown("<div style='text-align:center;'>Find Similar Projects</div>", unsafe_allow_html=True)
 
     with col4:
-        st.image("Identify Missing Items_CoPilot.png")
+        st.image("Identify_Missing_Items.png", width=120)
         st.markdown("<div style='text-align:center;'>Identify Missing Items</div>", unsafe_allow_html=True)
 
     with col5:
-        st.image("Verify Major Quantities_CoPilot.png")
+        st.image("Verify_Major_Quantities.png", width=120)
         st.markdown("<div style='text-align:center;'>Verify Major Quantities</div>", unsafe_allow_html=True)
 
-    # ---------- SPACE ----------
     st.markdown("###")
 
     # ---------- CONTENT ----------
@@ -53,56 +48,12 @@ with center:
     st.markdown("---")
 
     st.write("""
-    The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities in construction and maintenance projects.
-    """)
-
-    st.write("""
-    By analyzing historical project data and using advanced machine learning algorithms, Pro-CWII helps you:
+    The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) helps engineers
+    predict missing work items and verify major quantities.
     """)
 
     st.markdown("""
-    1. Identify similar past projects for better decision-making  
-    2. Predict potential missing work items before they become costly change orders  
-    3. Verify major quantities to ensure accurate project planning and resource allocation  
-    """)
-
-    st.write("""
-    This tool is specifically designed for Texas Department of Transportation (TxDOT) projects and uses TxDOT's standard specifications and work item codes.
-    """)
-
-    # ---------- HOW TO USE ----------
-    st.markdown("## How to Use This Tool")
-    st.markdown("---")
-
-    st.markdown("### Prepare Your Data")
-    st.markdown("""
-    - Download our sample template  
-    - Ensure your project data includes item codes, quantities, and unit prices  
-    - Save your file in Excel (.xlsx) format  
-    """)
-
-    st.markdown("### Choose Your Analysis")
-    st.markdown("""
-    - Find Similar Projects  
-    - Identify Missing Work Items  
-    - Verify Quantities for Major Pay Items  
-    """)
-
-    st.markdown("### Get Results")
-    st.markdown("""
-    - Upload your prepared Excel file  
-    - Review the analysis results  
-    - Download the detailed report  
-    - Optionally, receive results via email  
-    """)
-
-    st.markdown("### Need Help?")
-    st.markdown("""
-    - Visit our Help page for detailed instructions  
-    - Download the comprehensive user manual  
-    - Review common troubleshooting tips  
-    """)
-
-    st.write("""
-    For the best results, ensure your input data follows the sample format exactly.
+    1. Identify similar past projects  
+    2. Predict missing items before change orders  
+    3. Verify quantities  
     """)
