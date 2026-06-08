@@ -34,7 +34,6 @@ with container:
             st.image("txdot-logo-1000x500.png", width=180)
 
         with col2:
-            # Removed the fixed 100px height to prevent text clipping
             st.markdown("""
             <div style="display: flex; align-items: center; padding-top: 10px;">
                 <h1 style="margin: 0; font-size: 2.2rem; font-weight: bold; color: #000000; line-height: 1.2;">
@@ -49,7 +48,7 @@ with container:
         icon_cols = st.columns(6)
         
         with icon_cols[0]:
-            st.image("SampleCopilot.png", use_container_width=True)
+            st.image("HomeCopilot.png", use_container_width=True)
         with icon_cols[1]:
             st.image("HelpCoPilot.png", use_container_width=True)
         with icon_cols[2]:
