@@ -37,30 +37,41 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- PRECISE FLOATING WIDGET ALIGNMENT ---------- */
-    /* Fixed viewport placement - raised slightly from absolute bottom */
+    /* ---------- TRUE FLOATING CHAT WIDGET EFFECT ---------- */
+    /* Fixed viewport placement - raised beautifully off the floor and wall */
     div.raised-floating-bot {
         position: fixed;
-        bottom: 80px; 
-        right: 30px;
+        bottom: 45px; 
+        right: 45px;
         z-index: 999999;
+        transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     
-    /* Global layout override style for Wayne's toggle switch button */
+    /* Subtle lifting float movement when hovering over the toggle trigger */
+    div.raised-floating-bot:hover {
+        transform: translateY(-4px);
+    }
+    
+    /* Style the popover toggle button to look like an elevated floating pill */
     div.raised-floating-bot button {
         background-color: #1f77b4 !important;
         color: white !important;
-        border-radius: 50px !important;
-        padding: 0.6rem 1.6rem !important;
-        box-shadow: 0px 5px 18px rgba(0, 0, 0, 0.25) !important;
-        border: none !important;
-        font-weight: bold !important;
+        border-radius: 30px !important;
+        padding: 0.75rem 1.75rem !important;
+        box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px !important;
     }
     
-    /* Explicit layout containment wrapper for the active open chat history container */
+    /* Popover panel overlay enhancements */
     div[data-testid="stPopoverBody"] {
-        width: 380px !important;
-        max-height: 480px !important;
+        width: 390px !important;
+        max-height: 520px !important;
+        box-shadow: 0px 12px 36px rgba(0, 0, 0, 0.25) !important;
+        border-radius: 16px !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        backdrop-filter: blur(8px);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -173,24 +184,29 @@ with container:
 
 # ---------- INTERACTIVE FLOATING RAISED POPOVER ----------
 st.markdown('<div class="raised-floating-bot">', unsafe_allow_html=True)
-with st.popover("💬 Chat with Wayne-AI"):
+with st.popover("🤖 Ask Wayne-AI"):
     st.markdown("### 🤖 Wayne-AI Workspace")
     
-    # Create a container block to handle internal layout updates smoothly
+    # Create a layout block container to keep historical logs ordered neatly
     chat_container = st.container()
     
-    # Capture input values reliably
-    user_input = st.chat_input("Ask Wayne-AI...")
+    # Capture user string inputs
+    user_input = st.chat_input("Type your project question here...")
     
     if user_input:
-        # 1. Instantly append the user message to session state
+        # Append User input details
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         
-        # 2. Build and append the assistant's reply sequence back-to-back
+        # -------------------------------------------------------------
+        # BACKEND INTEGRATION NOTE:
+        # Replace the mock reply logic below with your live API calls:
+        # response = client.chat.completions.create(model="...", messages=...)
+        # copilot_reply = response.choices[0].message.content
+        # -------------------------------------------------------------
         copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
 
-    # 3. Always render the entire conversation history inside the chat container block
+    # Always render the historical list logs sequentially inside the workspace panel block
     with chat_container:
         for message in st.session_state.chat_history:
             with st.chat_message(message["role"]):
