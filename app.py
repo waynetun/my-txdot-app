@@ -14,33 +14,38 @@ with center:
         st.image("txdot-logo-1000x500.png", width=180)
 
     with col2:
-        st.markdown("<h2>TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)</h2>", unsafe_allow_html=True)
+        st.markdown("""
+        <h2 style="margin-top:20px;">
+        TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)
+        </h2>
+        """, unsafe_allow_html=True)
 
     st.markdown("###")
 
-    # ---------- ICONS ----------
+    # ---------- ICON GRID ----------
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.image("Sample.png", width=120)
+        st.image("SampleCopilot.png", width=120)
         st.markdown("<div style='text-align:center;'>Sample</div>", unsafe_allow_html=True)
 
     with col2:
-        st.image("Help.png", width=120)
+        st.image("HelpCoPilot.png", width=120)
         st.markdown("<div style='text-align:center;'>Help</div>", unsafe_allow_html=True)
 
     with col3:
-        st.image("Find_Similar_Projects.png", width=120)
+        st.image("FindSimilarProjectCoPilot.png", width=120)
         st.markdown("<div style='text-align:center;'>Find Similar Projects</div>", unsafe_allow_html=True)
 
     with col4:
-        st.image("Identify_Missing_Items.png", width=120)
+        st.image("IdentifyMissingItemsCopilot.png", width=120)
         st.markdown("<div style='text-align:center;'>Identify Missing Items</div>", unsafe_allow_html=True)
 
     with col5:
-        st.image("Verify_Major_Quantities.png", width=120)
+        st.image("VerifyMajorQuantitiesCoPilot.png", width=120)
         st.markdown("<div style='text-align:center;'>Verify Major Quantities</div>", unsafe_allow_html=True)
 
+    # ---------- SPACE ----------
     st.markdown("###")
 
     # ---------- CONTENT ----------
@@ -48,12 +53,19 @@ with center:
     st.markdown("---")
 
     st.write("""
-    The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) helps engineers
-    predict missing work items and verify major quantities.
+    The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities in construction and maintenance projects.
+    """)
+
+    st.write("""
+    By analyzing historical project data and using advanced machine learning algorithms, Pro-CWII helps you:
     """)
 
     st.markdown("""
-    1. Identify similar past projects  
-    2. Predict missing items before change orders  
-    3. Verify quantities  
+    1. Identify similar past projects for better decision-making  
+    2. Predict potential missing work items before they become costly change orders  
+    3. Verify major quantities to ensure accurate project planning and resource allocation  
+    """)
+
+    st.write("""
+    This tool is specifically designed for Texas Department of Transportation (TxDOT) projects and uses TxDOT's standard specifications.
     """)
