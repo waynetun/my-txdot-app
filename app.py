@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Optimized CSS Injector targeting the standard Streamlit image element stack
+# Corrected CSS Injector targeting the standard Streamlit layout blocks directly
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -22,7 +22,7 @@ st.markdown("""
         100% { transform: translate(0px, 0px) rotate(0deg); }
     }
 
-    /* Apply the single shake effect on hover to our custom text classes */
+    /* Apply single shake on hover to our text blocks */
     .shaky-item:hover {
         display: block;
         animation: single-shake-animation 0.4s ease-in-out;
@@ -30,8 +30,8 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* Target the exact Streamlit image wrappers inside our custom named columns */
-    .shaky-container div[data-testid="stImage"] img:hover {
+    /* Target Streamlit's native columns ONLY inside our designated icon row container */
+    .shaky-row-container div[data-testid="column"]:hover {
         animation: single-shake-animation 0.4s ease-in-out;
         animation-iteration-count: 1;
         cursor: pointer;
@@ -66,9 +66,9 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROW (NATIVE IMAGES WITH CSS TARGETING) ----------
-        # Creating a containing div with a specific class we can target down into
-        st.markdown('<div class="shaky-container">', unsafe_allow_html=True)
+        # ---------- NAVIGATION ICON ROW (NATIVE IMAGES + BLOCK HOVER) ----------
+        # This custom wrapper class lets us target Streamlit columns safely inside it
+        st.markdown('<div class="shaky-row-container">', unsafe_allow_html=True)
         
         icon_cols = st.columns(6)
         
