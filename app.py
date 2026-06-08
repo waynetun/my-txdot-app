@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Custom CSS to handle spacing and layout structure
+# Fixed CSS Injector with explicitly targeted classes
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -10,9 +10,28 @@ st.markdown("""
         padding-top: 2rem;
         padding-bottom: 2rem;
     }
-    /* Eliminate extra default bottom margins from image blocks in the icon grid */
-    div[data-testid="stImage"] {
-        margin-bottom: 0rem;
+
+    /* Define the Shake Animation Keyframes */
+    @keyframes shake-animation {
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); }
+        20% { transform: translate(-3px, 0px) rotate(1deg); }
+        30% { transform: translate(3px, 2px) rotate(0deg); }
+        40% { transform: translate(1px, -1px) rotate(1deg); }
+        50% { transform: translate(-1px, 2px) rotate(-1deg); }
+        60% { transform: translate(-3px, 1px) rotate(0deg); }
+        70% { transform: translate(3px, 1px) rotate(-1deg); }
+        80% { transform: translate(-1px, -1px) rotate(1deg); }
+        90% { transform: translate(1px, 2px) rotate(0deg); }
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    /* Apply the shake effect exclusively on hover to marked elements */
+    .shaky-item:hover {
+        display: block;
+        animation: shake-animation 0.5s;
+        animation-iteration-count: infinite;
+        cursor: pointer;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -44,73 +63,102 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROW (ALL IN ONE LINE) ----------
+        # ---------- NAVIGATION ICON ROW WITH TARGETED WRAPPERS ----------
         icon_cols = st.columns(6)
         
+        # Wrapping each column's asset inside our verified shaky class wrapper
         with icon_cols[0]:
+            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
             st.image("HomeCopilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[1]:
+            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
             st.image("HelpCoPilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[2]:
+            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
             st.image("SampleCopilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[3]:
+            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
             st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[4]:
+            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
             st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[5]:
+            st.markdown('<div class="shaky-item">', unsafe_allow_html=True)
             st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---------- WELCOME SECTION ----------
         st.markdown("""
-        <h2 style="color: #000000; margin-bottom: 4px; padding-bottom: 8px; border-bottom: 3px solid #3498db;">
-            Welcome
-        </h2>
+        <div class="shaky-item">
+            <h2 style="color: #000000; margin-bottom: 4px; padding-bottom: 8px; border-bottom: 3px solid #3498db; margin-top: 0;">
+                Welcome
+            </h2>
+        </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities in construction and maintenance projects. By analyzing historical project data and using advanced machine learning algorithms, Pro-CWII helps you:
-
-1. Identify similar past projects for better decision-making.
-2. Predict potential missing work items before they become costly change orders.
-3. Verify major quantities to ensure accurate project planning and resource allocation.
-
-This tool is specifically designed for Texas Department of Transportation (TxDOT) projects and uses TxDOT's standard specifications and work item codes.
-        """)
+        <div class="shaky-item">
+        <p>The TxDOT - Proactive Construction Work Item Identifier (Pro-CWII) is a powerful tool designed to help engineers and project managers predict and identify potential missing work items and verify major quantities in construction and maintenance projects. By analyzing historical project data and using advanced machine learning algorithms, Pro-CWII helps you:</p>
+        <ol>
+            <li>Identify similar past projects for better decision-making.</li>
+            <li>Predict potential missing work items before they become costly change orders.</li>
+            <li>Verify major quantities to ensure accurate project planning and resource allocation.</li>
+        </ol>
+        <p>This tool is specifically designed for Texas Department of Transportation (TxDOT) projects and uses TxDOT's standard specifications and work item codes.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---------- HOW TO USE SECTION ----------
         st.markdown("""
-        <h2 style="color: #000000; margin-bottom: 4px; padding-bottom: 8px; border-bottom: 3px solid #2ecc71;">
-            How to Use This Tool
-        </h2>
+        <div class="shaky-item">
+            <h2 style="color: #000000; margin-bottom: 4px; padding-bottom: 8px; border-bottom: 3px solid #2ecc71; margin-top: 0;">
+                How to Use This Tool
+            </h2>
+        </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-Follow these simple steps to get started:
-
-### Prepare Your Data
-* Download our sample template to see the required format  
-* Ensure your project data includes item codes, quantities, and unit prices  
-* Save your file in Excel (.xlsx) format  
-
-### Choose Your Analysis
-* Find Similar Projects  
-* Identify Missing Work Items  
-* Verify Quantities for Major Pay Items  
-
-### Get Results
-* Upload your prepared Excel file  
-* Review the analysis results  
-* Download the detailed report  
-* Optionally, receive results via email  
-
-### Need Help?
-* Visit our Help page for detailed instructions  
-* Download the comprehensive user manual  
-* Review common troubleshooting tips  
-
-For the best results, ensure your input data follows the sample format exactly.
-        """)
+        <div class="shaky-item">
+        <p>Follow these simple steps to get started:</p>
+        <h3>Prepare Your Data</h3>
+        <ul>
+            <li>Download our sample template to see the required format</li>
+            <li>Ensure your project data includes item codes, quantities, and unit prices</li>
+            <li>Save your file in Excel (.xlsx) format</li>
+        </ul>
+        <h3>Choose Your Analysis</h3>
+        <ul>
+            <li>Find Similar Projects</li>
+            <li>Identify Missing Work Items</li>
+            <li>Verify Quantities for Major Pay Items</li>
+        </ul>
+        <h3>Get Results</h3>
+        <ul>
+            <li>Upload your prepared Excel file</li>
+            <li>Review the analysis results</li>
+            <li>Download the detailed report</li>
+            <li>Optionally, receive results via email</li>
+        </ul>
+        <h3>Need Help?</h3>
+        <ul>
+            <li>Visit our Help page for detailed instructions</li>
+            <li>Download the comprehensive user manual</li>
+            <li>Review common troubleshooting tips</li>
+        </ul>
+        <p>For the best results, ensure your input data follows the sample format exactly.</p>
+        </div>
+        """, unsafe_allow_html=True)
