@@ -22,12 +22,18 @@ st.markdown("""
         100% { transform: translate(0px, 0px) rotate(0deg); }
     }
 
-    /* Apply the shake effect ONLY ONCE on hover to marked elements */
-    .shaky-item:hover, .shaky-icon:hover {
-        display: block;
-        animation: single-shake-animation 0.4s; /* Set duration */
-        animation-iteration-count: 1; /* Key change: Run only once per hover */
+    /* Force the animation to run exactly 1 time on hover */
+    .shaky-item:hover, .shaky-icon:hover img {
+        animation: single-shake-animation 0.4s ease-in-out;
+        animation-iteration-count: 1;
         cursor: pointer;
+    }
+    
+    /* Make sure inline HTML images scale nicely like native streamlit elements */
+    .shaky-icon img {
+        width: 100%;
+        height: auto;
+        display: block;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -59,39 +65,27 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROW WITH SHAKY-ICON WRAPPERS ----------
+        # ---------- NAVIGATION ICON ROW (RENDERED VIA HTML FOR HOVER PASSTHROUGH) ----------
         icon_cols = st.columns(6)
         
-        # Wrapping each column's asset inside our specific sneaky class wrapper
+        # Rendering images via direct HTML string injection to avoid Streamlit container blocking
         with icon_cols[0]:
-            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
-            st.image("HomeCopilot.png", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon"><img src="app/static/HomeCopilot.png"></div>', unsafe_allow_html=True)
             
         with icon_cols[1]:
-            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
-            st.image("HelpCoPilot.png", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon"><img src="app/static/HelpCoPilot.png"></div>', unsafe_allow_html=True)
             
         with icon_cols[2]:
-            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
-            st.image("SampleCopilot.png", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon"><img src="app/static/SampleCopilot.png"></div>', unsafe_allow_html=True)
             
         with icon_cols[3]:
-            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
-            st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon"><img src="app/static/FindSimilarProjectCoPilot.png"></div>', unsafe_allow_html=True)
             
         with icon_cols[4]:
-            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
-            st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon"><img src="app/static/IdentifyMissingItemsCopilot.png"></div>', unsafe_allow_html=True)
             
         with icon_cols[5]:
-            st.markdown('<div class="shaky-icon">', unsafe_allow_html=True)
-            st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="shaky-icon"><img src="app/static/VerifyMajorQuantitiesCoPilot.png"></div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
