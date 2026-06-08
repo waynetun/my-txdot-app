@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Custom CSS targeting layout blocks, text classes, and fixing the popover to the bottom right
+# Custom CSS targeting layout blocks, text classes, and precise floating coordinates
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -37,29 +37,30 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- FLOATING CORNER BUTTON ---------- */
-    /* Snaps the Streamlit popover button directly to the fixed bottom-right corner */
-    div.floating-popover-container {
+    /* ---------- PRECISE FLOATING WIDGET ALIGNMENT ---------- */
+    /* Fixed viewport placement - raised slightly from absolute bottom */
+    div.raised-floating-bot {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 80px; /* Raised off the absolute floor */
+        right: 30px;
         z-index: 999999;
     }
     
-    /* Style the popover toggle button to look like a floating chat action element */
-    div.floating-popover-container button {
+    /* Global layout override style for Wayne's toggle switch button */
+    div.raised-floating-bot button {
         background-color: #1f77b4 !important;
         color: white !important;
         border-radius: 50px !important;
-        padding: 0.6rem 1.5rem !important;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2) !important;
+        padding: 0.6rem 1.6rem !important;
+        box-shadow: 0px 5px 18px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
+        font-weight: bold !important;
     }
     
-    /* Give the open chat layout box fixed width dimensions so it feels like a native panel */
+    /* Explicit layout containment wrapper for the active open chat history container */
     div[data-testid="stPopoverBody"] {
         width: 360px !important;
-        max-height: 500px !important;
+        max-height: 480px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -170,18 +171,18 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- INTERACTIVE FLOATING CORNER POPOVER ----------
-# Injecting the open popover container element inside our custom fixed floating wrapper class zone
-st.markdown('<div class="floating-popover-container">', unsafe_allow_html=True)
+# ---------- INTERACTIVE FLOATING RAISED POPOVER ----------
+# Placing inside a styled wrapper to offset the bottom coordinates cleanly
+st.markdown('<div class="raised-floating-bot">', unsafe_allow_html=True)
 with st.popover("💬 Chat with Wayne-AI"):
     st.markdown("### 🤖 Wayne-AI Workspace")
     
-    # Render historical conversation streams clearly inside the popover window context
+    # Render historical conversation log stream
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
             st.write(message["content"])
             
-    # Capture input values reliably without layout canvas overflow
+    # Capture input values reliably
     if user_input := st.chat_input("Ask Wayne-AI..."):
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         
