@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Custom CSS targeting layout blocks, text classes, and the floating chat panel structure
+# Custom CSS targeting layout blocks, text classes, and the floating Wayne-AI widget
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -37,27 +37,39 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- FLOATING COPILOT INTERFACE ---------- */
-    /* Sticky bottom-right alignment container for the sidebar popover */
-    div[data-testid="stSidebarCollapse"] {
+    /* ---------- FLOATING WAYNE-AI CORNER WIDGET ---------- */
+    /* Sticky bottom-right parent container box targeting */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.wayne-floating-box) {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background-color: #1f77b4 !important;
-        color: white !important;
-        border-radius: 50%;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+        width: 340px;
+        height: 450px;
+        background-color: #ffffff !important;
+        border-radius: 12px !important;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid #e0e0e0 !important;
+        z-index: 999999 !important;
+        padding: 10px !important;
+        overflow: hidden !important;
     }
-    
-    /* Simple styling rule to customize our chat header block */
-    .copilot-header {
+
+    /* Header styling inside the floating element */
+    .wayne-header {
         background-color: #1f77b4;
         color: white;
         padding: 10px;
-        border-radius: 8px;
+        border-radius: 8px 8px 0 0;
         font-weight: bold;
         text-align: center;
-        margin-bottom: 15px;
+        margin: -10px -10px 10px -10px;
+    }
+    
+    /* Make the conversation wrapper scroll smoothly within limits */
+    div.wayne-chat-history {
+        height: 320px;
+        overflow-y: auto;
+        padding-right: 5px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -68,22 +80,17 @@ if "chat_history" not in st.session_state:
         {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
     ]
 
-# ---------- OUTER CENTER (creates margins) ----------
+# ---------- MAIN CONTENT MARGINS & GRID ----------
 left, container, right = st.columns([0.5, 5, 0.5])
 
 with container:
-
-    # ---------- INNER FIXED WIDTH ----------
     inner_left, inner_center, inner_right = st.columns([0.5, 11, 0.5])
 
     with inner_center:
-
         # ---------- HEADER ----------
         col1, col2 = st.columns([1, 4])
-
         with col1:
             st.image("txdot-logo-1000x500.png", width=180)
-
         with col2:
             st.markdown("""
             <div style="display: flex; align-items: center; padding-top: 10px;">
@@ -98,19 +105,12 @@ with container:
         # ---------- NAVIGATION ICON ROW ----------
         st.markdown('<div class="shaky-row-container">', unsafe_allow_html=True)
         icon_cols = st.columns(6)
-        
-        with icon_cols[0]:
-            st.image("HomeCopilot.png", use_container_width=True)
-        with icon_cols[1]:
-            st.image("HelpCoPilot.png", use_container_width=True)
-        with icon_cols[2]:
-            st.image("SampleCopilot.png", use_container_width=True)
-        with icon_cols[3]:
-            st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
-        with icon_cols[4]:
-            st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
-        with icon_cols[5]:
-            st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
+        with icon_cols[0]: st.image("HomeCopilot.png", use_container_width=True)
+        with icon_cols[1]: st.image("HelpCoPilot.png", use_container_width=True)
+        with icon_cols[2]: st.image("SampleCopilot.png", use_container_width=True)
+        with icon_cols[3]: st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
+        with icon_cols[4]: st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
+        with icon_cols[5]: st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -180,25 +180,27 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- INTERACTIVE SIDEBAR AS CORNER WAYNE-AI PANEL ----------
-with st.sidebar:
-    st.markdown('<div class="copilot-header">🤖 Wayne-AI Workspace</div>', unsafe_allow_html=True)
+# ---------- FLOATING CORNER INTERACTIVE CHAT CONTAINER ----------
+# A standard st.container() injected with our tracking CSS class acts as the pinned viewport box
+with st.container():
+    # Anchor target signature element for CSS selector tracking
+    st.markdown('<div class="wayne-floating-box"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="wayne-header">🤖 Wayne-AI</div>', unsafe_allow_html=True)
     
-    # Render historical log exchanges
+    # Internal box hosting messages
+    st.markdown('<div class="wayne-chat-history">', unsafe_allow_html=True)
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
             st.write(message["content"])
+    st.markdown('</div>', unsafe_allow_html=True)
             
-    # Active text processing engine capture terminal 
-    if user_input := st.chat_input("Ask Wayne-AI a question..."):
-        # Append User input details
+    # Input terminal positioned at the base of our floating container setup
+    if user_input := st.chat_input("Ask Wayne-AI..."):
         st.session_state.chat_history.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
-            st.write(user_input)
-            
-        # Updated Wayne-AI return logic
-        copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         
+        # Build analysis string
+        copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
-        with st.chat_message("assistant"):
-            st.write(copilot_reply)
+        
+        # Re-trigger page paint cycle to cleanly render newest additions immediately
+        st.rerun()
