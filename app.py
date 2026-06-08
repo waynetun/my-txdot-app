@@ -7,42 +7,48 @@ left, center, right = st.columns([1, 2, 1])
 
 with center:
 
-    # ---------- HEADER ----------
-    col1, col2 = st.columns([1, 3])
+    # ---------- HEADER (FIXED ALIGNMENT) ----------
+    col1, col2 = st.columns([1, 4])
 
     with col1:
         st.image("txdot-logo-1000x500.png", width=200)
 
     with col2:
         st.markdown("""
-        <h2 style="margin-top:20px;">
-        TxDOT - Proactive Construction Work Item Identifier (Pro‑CWII)
-        </h2>
+        <div style="
+            display: flex;
+            align-items: center;
+            height: 100%;
+        ">
+            <h2 style="margin:0;">
+            TxDOT - Proactive Construction Work Item Identifier (Pro‑CWII)
+            </h2>
+        </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("###")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------- ICON ROW (BIGGER) ----------
+    # ---------- ICON ROW (180px) ----------
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.image("SampleCopilot.png", width=150)
+        st.image("SampleCopilot.png", width=180)
 
     with col2:
-        st.image("HelpCoPilot.png", width=150)
+        st.image("HelpCoPilot.png", width=180)
 
     with col3:
-        st.image("FindSimilarProjectCoPilot.png", width=150)
+        st.image("FindSimilarProjectCoPilot.png", width=180)
 
     with col4:
-        st.image("IdentifyMissingItemsCopilot.png", width=150)
+        st.image("IdentifyMissingItemsCopilot.png", width=180)
 
     with col5:
-        st.image("VerifyMajorQuantitiesCoPilot.png", width=150)
+        st.image("VerifyMajorQuantitiesCoPilot.png", width=180)
 
     st.markdown("###")
 
-    # ---------- WELCOME ----------
+    # ---------- CONTENT ----------
     st.markdown("## Welcome")
     st.markdown("---")
 
