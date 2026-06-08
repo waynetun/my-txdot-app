@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-# Optimized CSS Injector targeting structural layout blocks, text classes, and the floating chatbox
+# Custom CSS targeting layout blocks, text classes, and the floating chat panel structure
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -11,7 +11,7 @@ st.markdown("""
         padding-bottom: 2rem;
     }
 
-    /* Define the Single Shake Animation Keyframes (Quick & subtle) */
+    /* Define the Single Shake Animation Keyframes */
     @keyframes single-shake-animation {
         0% { transform: translate(0px, 0px) rotate(0deg); }
         15% { transform: translate(-2px, 1px) rotate(-1deg); }
@@ -22,7 +22,7 @@ st.markdown("""
         100% { transform: translate(0px, 0px) rotate(0deg); }
     }
 
-    /* Apply single shake on hover to our text blocks */
+    /* Apply single shake on hover to text blocks */
     .shaky-item:hover {
         display: block;
         animation: single-shake-animation 0.4s ease-in-out;
@@ -30,62 +30,43 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* Target Streamlit's native columns ONLY inside our designated icon row container */
+    /* Target Streamlit's native columns inside the icon row container */
     .shaky-row-container div[data-testid="column"]:hover {
         animation: single-shake-animation 0.4s ease-in-out;
         animation-iteration-count: 1;
         cursor: pointer;
     }
 
-    /* ---------- FLOATING AI CHATBOX BOX STYLING ---------- */
-    .floating-chat-container {
+    /* ---------- FLOATING COPILOT INTERFACE ---------- */
+    /* Sticky bottom-right alignment container for the sidebar popover */
+    div[data-testid="stSidebarCollapse"] {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 320px;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
-        border: 1px solid #e0e0e0;
-        font-family: sans-serif;
-        z-index: 999999;
-        overflow: hidden;
+        background-color: #1f77b4 !important;
+        color: white !important;
+        border-radius: 50%;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     }
     
-    /* Apply the single shake effect on hover to the chatbox */
-    .floating-chat-container:hover {
-        animation: single-shake-animation 0.4s ease-in-out;
-        animation-iteration-count: 1;
-    }
-
-    .chat-header {
+    /* Simple styling rule to customize our chat header block */
+    .copilot-header {
         background-color: #1f77b4;
         color: white;
-        padding: 12px;
+        padding: 10px;
+        border-radius: 8px;
         font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .chat-body {
-        padding: 15px;
-        height: 200px;
-        overflow-y: auto;
-        font-size: 0.9rem;
-        color: #333333;
-        background-color: #f9f9f9;
-    }
-
-    .chat-bubble-ai {
-        background-color: #e1f5fe;
-        padding: 8px 12px;
-        border-radius: 12px 12px 12px 0px;
-        margin-bottom: 10px;
-        line-height: 1.3;
+        text-align: center;
+        margin-bottom: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Initialize Session State tracking for the Wayne-AI conversational history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = [
+        {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
+    ]
 
 # ---------- OUTER CENTER (creates margins) ----------
 left, container, right = st.columns([0.5, 5, 0.5])
@@ -116,7 +97,6 @@ with container:
 
         # ---------- NAVIGATION ICON ROW ----------
         st.markdown('<div class="shaky-row-container">', unsafe_allow_html=True)
-        
         icon_cols = st.columns(6)
         
         with icon_cols[0]:
@@ -131,7 +111,6 @@ with container:
             st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
         with icon_cols[5]:
             st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
-            
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -200,23 +179,26 @@ with container:
         </div>
         """, unsafe_allow_html=True)
 
-# ---------- FLOATING RIGHT CORNER COPILOT CHATBOX ----------
-# Placed outside the central column framework so it pins directly to the browser window viewport boundaries
-st.markdown("""
-    <div class="floating-chat-container">
-        <div class="chat-header">
-            🤖 Pro-CWII Copilot
-        </div>
-        <div class="chat-body">
-            <div class="chat-bubble-ai">
-                Hello! How can I help you analyze your TxDOT construction project data today?
-            </div>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
 
-# Embedded target text inputs directly underneath the overlay via Streamlit layout mechanics
+# ---------- INTERACTIVE SIDEBAR AS CORNER WAYNE-AI PANEL ----------
 with st.sidebar:
-    # Optional fallback context or controls could go here. 
-    # To keep the chat text input interactive with Python logic, we can place the native input element inside the floating frame area if needed.
-    pass
+    st.markdown('<div class="copilot-header">🤖 Wayne-AI Workspace</div>', unsafe_allow_html=True)
+    
+    # Render historical log exchanges
+    for message in st.session_state.chat_history:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
+            
+    # Active text processing engine capture terminal 
+    if user_input := st.chat_input("Ask Wayne-AI a question..."):
+        # Append User input details
+        st.session_state.chat_history.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.write(user_input)
+            
+        # Updated Wayne-AI return logic
+        copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
+        
+        st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
+        with st.chat_message("assistant"):
+            st.write(copilot_reply)
