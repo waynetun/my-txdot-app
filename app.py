@@ -19,7 +19,7 @@ similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
 missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
-# Custom CSS targeting layout blocks, navigation items, and the premium floating widget
+# Custom CSS targeting layout blocks, navigation items, and fixed component overrides
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -92,9 +92,20 @@ st.markdown("""
         border-radius: 20px;
     }
     
-    /* Hide the default utility elements of hidden toggle button elements securely */
-    div.hidden-trigger-btn button {
+    /* Completely hide the background bridge sync data processing target elements */
+    div.hidden-trigger-btn, div.hidden-trigger-btn button {
         display: none !important;
+        height: 0px !important;
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+
+    /* CRITICAL FIX: Pin the entire HTML block element to the screen viewport permanently */
+    div[data-testid="stHtml"] {
+        position: fixed !important;
+        bottom: 0px !important;
+        right: 0px !important;
+        z-index: 9999999 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -128,7 +139,6 @@ with container:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---------- 3D GLASSMORPHIC NAVIGATION ROW ----------
-        # This structure uses the pre-rendered inline base64 string map data to clear broken image boxes permanently
         st.markdown(f"""
             <div class="glass-icon-container">
                 <div class="glass-icon-item"><img src="{home_b64 if home_b64 else 'https://img.icons8.com/fluency/96/home.png'}"></div>
@@ -208,11 +218,10 @@ with container:
 # -------------------------------------------------------------------------
 # ---------- TRUE FLOATING FIXED INJECTED COGNITIVE ASSISTANT ROW ----------
 # -------------------------------------------------------------------------
-# We capture data back and forth to streamline chat update reruns seamlessly
 if "last_msg" not in st.session_state:
     st.session_state.last_msg = ""
 
-# Hidden button setup used as a processing target bridge from the JavaScript interface layer
+# Hidden button processing bridge targeting updates securely
 st.markdown('<div class="hidden-trigger-btn">', unsafe_allow_html=True)
 sync_clicked = st.button("SyncData", key="sync_button_key")
 st.markdown('</div>', unsafe_allow_html=True)
@@ -243,9 +252,10 @@ for msg in st.session_state.chat_history:
     </div>
     """
 
-# Injecting the absolute screen-fixed raw HTML and JS controller layer
+# Injecting the absolute screen-fixed HTML block
+# Adjusted positioning configurations to stay pinned relative to viewport coordinates directly
 st.components.v1.html(f"""
-    <div id="wayne-floating-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999999; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
+    <div id="wayne-global-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 2147483647; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
         
         <div id="wayne-chat-card" style="display: none; width: 360px; height: 480px; background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.08); border-radius: 24px; box-shadow: 0px 20px 45px rgba(0,0,0,0.15); margin-bottom: 15px; flex-direction: column; overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
             <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 16px; color: white; display: flex; justify-content: space-between; align-items: center;">
@@ -264,7 +274,7 @@ st.components.v1.html(f"""
         </div>
 
         <div style="display: flex; justify-content: flex-end;">
-            <button id="wayne-floating-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 26px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.2s ease;">
+            <button id="wayne-floating-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 26px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.4); display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
                 <span>💬</span> Ask Wayne-AI
             </button>
         </div>
@@ -300,7 +310,6 @@ st.components.v1.html(f"""
             const txt = inputField.value.trim();
             if(!txt) return;
             
-            // Inject text value as query parameter and fire sync click
             const url = new URL(window.parent.location.href);
             url.searchParams.set("msg", txt);
             window.parent.location.href = url.toString();
