@@ -30,7 +30,7 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- NATIVE FLEXBOX 3D GLASS ICON ROW ---------- */
+    /* ---------- PREMIUM NATIVE GLASSMORPHIC NAV ROW ---------- */
     .glass-icon-container {
         display: flex;
         justify-content: space-between;
@@ -45,25 +45,25 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.35);
         backdrop-filter: blur(12px) saturate(140%);
         -webkit-backdrop-filter: blur(12px) saturate(140%);
-        border-radius: 20px;
-        padding: 10px;
+        border-radius: 24px;
+        padding: 4px; /* Tight padding so the glass border perfectly hugs your card shape */
         display: flex;
         align-items: center;
         justify-content: center;
         
-        /* 3D Bevel: Highlight on top/left, deep structure on right/bottom */
-        border-top: 1px solid rgba(255, 255, 255, 0.6);
-        border-left: 1px solid rgba(255, 255, 255, 0.6);
+        /* Premium 3D Bevel: top/left highlights, deep right/bottom structure */
+        border-top: 1px solid rgba(255, 255, 255, 0.7);
+        border-left: 1px solid rgba(255, 255, 255, 0.7);
         border-right: 3px solid rgba(0, 0, 0, 0.12);
         border-bottom: 4px solid rgba(0, 0, 0, 0.18);
         
-        /* Distinct 3D shadow cast towards the bottom-right corner */
+        /* 3D drop shadow cast towards the bottom-right corner */
         box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
         transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
     }
 
-    /* Hover effect: simulates pressing down the 3D glass shape */
+    /* Hover effect: simulates pressing down the 3D glass card */
     .glass-icon-item:hover {
         background: rgba(255, 255, 255, 0.55);
         box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
@@ -73,11 +73,12 @@ st.markdown("""
         animation: single-shake-animation 0.4s ease-in-out;
     }
 
-    /* Lock image presentation size neatly inside the item boundaries */
+    /* Lock your custom image sizes perfectly inside the glass item boundaries */
     .glass-icon-item img {
-        max-width: 100%;
+        width: 100%;
         height: auto;
-        object-fit: contain;
+        display: block;
+        border-radius: 20px;
     }
 
     /* ---------- TRUE FLOATING CHAT WIDGET EFFECT ---------- */
@@ -131,7 +132,10 @@ with container:
         # ---------- HEADER ----------
         col1, col2 = st.columns([1, 4])
         with col1:
-            st.image("txdot-logo-1000x500.png", width=180)
+            try:
+                st.image("txdot-logo-1000x500.png", width=180)
+            except:
+                st.subheader("TxDOT")
         with col2:
             st.markdown("""
             <div style="display: flex; align-items: center; padding-top: 10px;">
@@ -144,15 +148,15 @@ with container:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---------- 3D GLASSMORPHIC ROW FOR YOUR ORIGINAL ICON IMAGES ----------
-        # Serving relative paths inside standard HTML tags skips the column bugs entirely
+        # Case-corrected filenames used here ensure they load perfectly on cloud environments
         st.markdown("""
             <div class="glass-icon-container">
-                <div class="glass-icon-item"><img src="app/static/HomeCopilot.png" onerror="this.src='HomeCopilot.png'"></div>
-                <div class="glass-icon-item"><img src="app/static/HelpCoPilot.png" onerror="this.src='HelpCoPilot.png'"></div>
-                <div class="glass-icon-item"><img src="app/static/SampleCopilot.png" onerror="this.src='SampleCopilot.png'"></div>
-                <div class="glass-icon-item"><img src="app/static/FindSimilarProjectCoPilot.png" onerror="this.src='FindSimilarProjectCoPilot.png'"></div>
-                <div class="glass-icon-item"><img src="app/static/IdentifyMissingItemsCopilot.png" onerror="this.src='IdentifyMissingItemsCopilot.png'"></div>
-                <div class="glass-icon-item"><img src="app/static/VerifyMajorQuantitiesCoPilot.png" onerror="this.src='VerifyMajorQuantitiesCoPilot.png'"></div>
+                <div class="glass-icon-item"><img src="HomeCopilot.png"></div>
+                <div class="glass-icon-item"><img src="HelpCoPilot.png"></div>
+                <div class="glass-icon-item"><img src="SampleCopilot.png"></div>
+                <div class="glass-icon-item"><img src="FindSimilarProjectCoPilot.png"></div>
+                <div class="glass-icon-item"><img src="IdentifyMissingItemsCopilot.png"></div>
+                <div class="glass-icon-item"><img src="VerifyMajorQuantitiesCoPilot.png"></div>
             </div>
         """, unsafe_allow_html=True)
 
