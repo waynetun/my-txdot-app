@@ -2,10 +2,10 @@ import streamlit as st
 import base64
 import os
 
-# 1. Page Configuration
+# 1. Set page configuration first
 st.set_page_config(layout="wide")
 
-# 2. State Initialization Pipeline
+# 2. CLEAR ALL RUNTIME BUGS: Initialize Session State at the Absolute Top
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
         {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
@@ -31,10 +31,10 @@ missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
 
-# ---------- GLOBAL CSS STYLE OVERRIDES ----------
+# ---------- GLOBAL SYSTEM-WIDE CSS INJECTIONS ----------
 st.markdown("""
     <style>
-    /* Clean up page padding */
+    /* Clean up overall layout margins */
     .block-container {
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
@@ -101,6 +101,21 @@ st.markdown("""
         height: auto;
         display: block;
         border-radius: 20px;
+    }
+
+    /* ---------- FLOATING POSITION HOOK ENGINE ---------- 
+       This completely tears the widget out of Streamlit's layout flow 
+       and anchors it beautifully to the bottom right corner.
+    */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div#wayne-floating-anchor) {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 380px !important;
+        z-index: 999999 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -204,45 +219,16 @@ with container:
         </div>
         """, unsafe_allow_html=True)
 
-
-        # ---------- STABLE CHAT PROCESSING HUB ----------
-        # Build HTML dialogue strings safely
-        chat_bubbles_html = ""
-        for msg in st.session_state.chat_history:
-            bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
-            text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
-            margin = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
-            chat_bubbles_html += f"""
-            <div style='max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {margin}'>
-                <b>{msg['role'].capitalize()}:</b> {msg['content']}
-            </div>
-            """
-
-        # Toggle interface modal view panel logic seamlessly
-        if st.session_state.chat_is_open:
-            st.markdown("### 🔮 Wayne-AI Workspace")
-            st.markdown(
-                f"""<div style="height: 250px; overflow-y: auto; padding: 15px; border: 1px solid #e5e7eb; border-radius: 16px; background: #fafafa; margin-bottom: 12px;">
-                    {chat_bubbles_html}
-                </div>""", 
-                unsafe_allow_html=True
-            )
-            
-            # Form submission keeps backend calculations highly stable
-            with st.form(key="chat_input_form", clear_on_submit=True):
-                user_msg = st.text_input(label="Your Query:", placeholder="Type your project question here...", label_visibility="collapsed")
-                submit_btn = st.form_submit_button("Send Message")
-                
-                if submit_btn and user_msg.strip():
-                    st.session_state.chat_history.append({"role": "user", "content": user_msg})
-                    reply = f"Wayne-AI here! I've received your query about: '{user_msg}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
-                    st.session_state.chat_history.append({"role": "assistant", "content": reply})
-                    st.rerun()
-
-        # ---------- EXACT SINGLE LINE SPACE MARGIN BUTTON ----------
+        # EXACTLY ONE CLEAN LINE SPACE GAP UNDER THE LAST PARAGRAPH
         st.markdown('<div style="margin-top: 24px;"></div>', unsafe_allow_html=True)
-        
-        button_text = "Close Wayne-AI" if st.session_state.chat_is_open else "💬 Ask Wayne-AI"
-        if st.button(button_text):
-            st.session_state.chat_is_open = not st.session_state.chat_is_open
-            st.rerun()
+
+
+# -------------------------------------------------------------------------
+# ---------- PRODUCTION-READY FLOATING WAYNE-AI MOTOR ENGINE ----------
+# -------------------------------------------------------------------------
+floating_box = st.container()
+with floating_box:
+    # Anchor Hook that links directly to the viewport-pinning CSS rule above
+    st.markdown('<div id="wayne-floating-anchor"></div>', unsafe_allow_html=True)
+    
+    # Process messaging
