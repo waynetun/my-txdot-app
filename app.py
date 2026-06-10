@@ -92,28 +92,23 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* ---------- TRUE FIXED SCREEN-CORNER FLOATING ANCHOR ---------- */
-    /* This anchors the container to the browser window screen viewport */
+    /* ---------- PRECISE WINDOW-EDGE FLOATING ANCHOR SYSTEM ---------- */
+    /* Target container block to position it independently of page content heights */
     div.wayne-floating-anchor {
         position: fixed !important;
-        bottom: 35px !important;
-        right: 35px !important;
-        left: auto !important;
-        top: auto !important;
-        z-index: 999999 !important; /* Forces it to sit over all other page elements */
+        bottom: 30px !important;
+        right: 30px !important;
+        z-index: 999999 !important;
         width: auto !important;
         height: auto !important;
     }
 
-    /* Reset default layout restrictions on popover containers */
-    div.wayne-floating-anchor div[data-testid="stPopover"] {
+    /* Force the built-in checkbox/toggle button container structure to style as a premium pill button */
+    div.wayne-floating-anchor div[data-testid="stCheckbox"] {
         background: transparent !important;
-        border: none !important;
-        display: block !important;
     }
 
-    /* Style the popover button as a sleek modern pill gradient */
-    div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] {
+    div.wayne-floating-anchor div[data-testid="stCheckbox"] label {
         background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -124,42 +119,49 @@ st.markdown("""
         letter-spacing: 0.4px !important;
         box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.45) !important;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center !important;
-        gap: 8px !important;
+        justify-content: center !important;
+        cursor: pointer !important;
         height: 52px !important;
-        width: auto !important;
     }
 
-    /* Lift animation on hover */
-    div.wayne-floating-anchor button[data-testid="stPopoverActionButton"]:hover {
+    /* Hover interactions mirroring a high-fidelity desktop UI layout */
+    div.wayne-floating-anchor div[data-testid="stCheckbox"]:hover label {
         transform: translateY(-4px) !important;
         box-shadow: 0px 14px 35px rgba(168, 85, 247, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* Keep target inline svgs white */
-    div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] svg {
-        fill: white !important;
+    /* Hide the ugly native input square box completely */
+    div.wayne-floating-anchor div[data-testid="stCheckbox"] input {
+        display: none !important;
+    }
+    
+    /* Remove text shift alignment margin artifacts from checkmarks */
+    div.wayne-floating-anchor div[data-testid="stCheckbox"] div[data-testid="stMarkdownContainer"] p {
         color: white !important;
+        margin: 0 !important;
+        font-weight: 600 !important;
     }
 
-    /* ---------- SAME-SCREEN CHAT MODULE WINDOW ---------- */
-    /* This overrides the default drop placement and styles it as a sleek chat pane card */
-    div[data-testid="stPopoverBody"] {
+    /* ---------- SAME-SCREEN IMMERSIVE CHAT WINDOW CARD ---------- */
+    div.wayne-chat-window-box {
         position: fixed !important;
-        bottom: 100px !important; /* Positioned directly above the pill button */
-        right: 35px !important;
-        left: auto !important;
-        top: auto !important;
+        bottom: 95px !important; /* Suspended elegantly right on top of our pill trigger */
+        right: 30px !important;
         width: 380px !important;
-        max-height: 500px !important;
-        border-radius: 20px !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        background: rgba(255, 255, 255, 0.95) !important;
+        height: 520px !important;
+        border-radius: 24px !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
+        background: rgba(255, 255, 255, 0.96) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.22) !important;
+        z-index: 999998 !important;
+        padding: 18px !important;
+        display: flex !important;
+        flex-direction: column !important;
         overflow: hidden !important;
     }
     </style>
@@ -171,7 +173,7 @@ if "chat_history" not in st.session_state:
         {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
     ]
 
-# ---------- MAIN APPLICATION CONTENT AND GRID ----------
+# ---------- MAIN CONTENT MARGINS & GRID ----------
 left, container, right = st.columns([0.5, 5, 0.5])
 
 with container:
@@ -270,23 +272,30 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- FLOATING ON-SCREEN POPOVER CHAT COMPONENT ----------
-# This stays pinned right at the web-screen edge without switching pages or opening tabs!
+# ---------- IMMERSIVE OVERLAY CHAT TRIGGER LOGIC ----------
+# An isolated anchor block containing our custom styled trigger
 st.markdown('<div class="wayne-floating-anchor">', unsafe_allow_html=True)
-with st.popover("💬 Ask Wayne-AI"):
-    st.markdown("### 🔮 Wayne-AI Workspace")
+is_open = st.checkbox("💬 Ask Wayne-AI", value=False, key="wayne_chat_toggle")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# When active, render the dedicated window card anchored to screen coordinates seamlessly
+if is_open:
+    st.markdown('<div class="wayne-chat-window-box">', unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-top:0; color:#1e1e24;'>🔮 Wayne-AI Workspace</h3>", unsafe_allow_html=True)
     
-    chat_container = st.container()
-    user_input = st.chat_input("Type your project question here...")
+    # Inner scrollable message layer
+    chat_scroll_area = st.container(height=380)
+    user_input = st.chat_input("Type your project question here...", key="wayne_input_field")
     
     if user_input:
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
+        st.rerun()
 
-    with chat_container:
+    with chat_scroll_area:
         for message in st.session_state.chat_history:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
                 
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
