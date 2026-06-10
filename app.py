@@ -92,62 +92,71 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* ---------- PREMIUM FLOATING WAYNE-AI WIDGET STYLE ---------- */
-    /* Absolute fixed placement anchoring to the bottom-right viewport viewport */
+    /* ---------- ABSOLUTE WEBSCREEN CORNER FLOATING WAYNE-AI WIDGET ---------- */
+    /* This overrides Streamlit's structural grid to pin it to the screen corner permanently */
     div.wayne-floating-anchor {
-        position: fixed;
-        bottom: 35px;
-        right: 35px;
-        z-index: 999999;
+        position: fixed !important;
+        bottom: 30px !important;
+        right: 30px !important;
+        left: auto !important; /* Overrides any accidental left alignment */
+        top: auto !important;
+        z-index: 999999 !important; /* Keeps it layered above all content */
+        width: auto !important;
     }
 
-    /* Target the base popover button wrapper to overwrite layout restrictions */
+    /* Target the popover layout structure natively */
     div.wayne-floating-anchor div[data-testid="stPopover"] {
         background: transparent !important;
         border: none !important;
+        display: inline-block !important;
     }
 
-    /* Transform standard Streamlit buttons into a glowing gradient pill */
+    /* Transform button into a fluid, glowing purple-blue pill gradient */
     div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] {
         background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) !important;
         color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.25) !important;
-        border-radius: 50px !important; /* Perfect pill style contour */
-        padding: 14px 28px !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 50px !important;
+        padding: 12px 26px !important;
         font-weight: 600 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         letter-spacing: 0.4px !important;
-        box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.4) !important; /* Vivid purple-blue ambient glow */
+        box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.45) !important;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
         display: flex !important;
         align-items: center !important;
-        gap: 10px !important;
-        height: 54px !important;
+        gap: 8px !important;
+        height: 52px !important;
+        width: auto !important;
     }
 
-    /* Smooth lift and intensified glow when interacting with the widget button */
+    /* Lift interaction state on hover */
     div.wayne-floating-anchor button[data-testid="stPopoverActionButton"]:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0px 15px 35px rgba(168, 85, 247, 0.6) !important;
-        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        transform: translateY(-4px) !important;
+        box-shadow: 0px 14px 35px rgba(168, 85, 247, 0.65) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* Clean styling adjustment for the inner icon arrow */
+    /* Enforce white color for the dropdown arrow SVG */
     div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] svg {
         fill: white !important;
         color: white !important;
     }
 
-    /* Shape the layout and aesthetics of the chat bubble display panel */
+    /* Styling specifications for the active chat dialog container box */
     div[data-testid="stPopoverBody"] {
-        width: 400px !important;
-        max-height: 550px !important;
+        position: fixed !important;
+        bottom: 95px !important; /* Sits perfectly right above the pill widget */
+        right: 30px !important;
+        left: auto !important;
+        width: 380px !important;
+        max-height: 500px !important;
         border-radius: 20px !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        background: rgba(255, 255, 255, 0.85) !important;
+        background: rgba(255, 255, 255, 0.9) !important;
         backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
-        box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.18) !important;
+        box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -257,9 +266,9 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- MODERN PURPLE-BLUE GLOWING FLOATING POPOVER ----------
+# ---------- MODERN ABSOLUTE SCREEN CORNER FLOATING POPOVER ----------
+# Placing this block entirely outside structural columns locks it to the window viewport coordinates
 st.markdown('<div class="wayne-floating-anchor">', unsafe_allow_html=True)
-# We embed an inline robot emoji directly alongside text inside the popover generator
 with st.popover("💬 Ask Wayne-AI"):
     st.markdown("### 🔮 Wayne-AI Workspace")
     
