@@ -2,17 +2,17 @@ import streamlit as st
 import base64
 import os
 
-# 1. Set page configuration first
+# 1. Page Configuration
 st.set_page_config(layout="wide")
 
-# 2. IMMEDIATE CRASH FIX: Initialize state vectors before ANY execution logic runs
+# 2. State Initialization Pipeline
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
         {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
     ]
 
 if "chat_is_open" not in st.session_state:
-    st.session_state.chat_is_open = "false"
+    st.session_state.chat_is_open = False
 
 
 # Helper function to safely convert local image files into base64 HTML strings
@@ -31,10 +31,10 @@ missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
 
-# ---------- GLOBAL CSS LAYOUT OVERRIDES ----------
+# ---------- GLOBAL CSS STYLE OVERRIDES ----------
 st.markdown("""
     <style>
-    /* Clean up page margins */
+    /* Clean up page padding */
     .block-container {
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
@@ -102,60 +102,8 @@ st.markdown("""
         display: block;
         border-radius: 20px;
     }
-
-    /* ---------- REMOVE THE RESERVED GAP & FLOAT CONTAINER ---------- 
-       This specifically targets the vertical block containing our designated 
-       anchor ID, changing its position context to fixed so it takes up zero 
-       layout height space in the text flow.
-    */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div#fixed-wayne-container) {
-        position: fixed !important;
-        bottom: 30px !important;
-        right: 30px !important;
-        width: 380px !important;
-        height: 540px !important;
-        z-index: 999999 !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div#fixed-wayne-container) div[data-testid="stHtml"] {
-        position: static !important;
-        width: 100% !important;
-        height: 100% !important;
-    }
     </style>
 """, unsafe_allow_html=True)
-
-
-# ---------- CHAT SYNCHRONIZATION BACKEND PIPELINE ----------
-incoming_message = st.query_params.get("msg", "")
-updated_panel_state = st.query_params.get("panel_state", "")
-
-if updated_panel_state:
-    st.session_state.chat_is_open = updated_panel_state
-    st.query_params["panel_state"] = ""
-
-if incoming_message:
-    st.session_state.chat_history.append({"role": "user", "content": incoming_message})
-    copilot_reply = f"Wayne-AI here! I've received your query about: '{incoming_message}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
-    st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
-    st.query_params["msg"] = ""  
-    st.rerun()
-
-# Build HTML dialogue entries dynamically
-chat_bubbles_html = ""
-for msg in st.session_state.chat_history:
-    bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
-    text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
-    margin = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
-    
-    chat_bubbles_html += f"""
-    <div style='max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {margin}'>
-        <b>{msg['role'].capitalize()}:</b> {msg['content']}
-    </div>
-    """
 
 
 # ---------- MAIN DASHBOARD LAYOUT GRID ----------
@@ -257,90 +205,44 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# -------------------------------------------------------------------------
-# ---------- SECURE SEPARATE ISOLATED FLOATING CONTAINER ----------
-# -------------------------------------------------------------------------
-ai_layer = st.container()
-with ai_layer:
-    # Anchor tag that allows CSS to uniquely target and float this vertical block context
-    st.markdown('<div id="fixed-wayne-container"></div>', unsafe_allow_html=True)
-    
-    st.components.v1.html(f"""
-        <div id="wayne-app-root" style="position: fixed; bottom: 0; right: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; pointer-events: none; padding: 5px; box-sizing: border-box;">
-            
-            <div id="wayne-chat-card" style="display: none; width: 360px; height: 440px; background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.1); border-radius: 24px; box-shadow: 0px 12px 40px rgba(0,0,0,0.15); margin-bottom: 12px; flex-direction: column; overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); pointer-events: auto;">
-                
-                <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 600; font-size: 0.95rem; letter-spacing: 0.3px;">🔮 Wayne-AI Workspace</span>
-                    <span id="close-chat-pane" style="cursor: pointer; font-size: 1.2rem; opacity: 0.8; font-weight: bold; padding: 2px 6px;">×</span>
-                </div>
-                
-                <div style="flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; background: #fafafa;" id="chat-scroller-node">
-                    {chat_bubbles_html}
-                </div>
-                
-                <div style="padding: 10px 14px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 8px; background: white;">
-                    <input id="chat-input-box" type="text" placeholder="Type your project question here..." style="flex: 1; padding: 10px 14px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.85rem;" />
-                    <button id="send-chat-payload" style="background: #3b82f6; color: white; border: none; padding: 0 16px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Send</button>
-                </div>
+        # ---------- STABLE CHAT PROCESSING HUB ----------
+        # Build HTML dialogue strings safely
+        chat_bubbles_html = ""
+        for msg in st.session_state.chat_history:
+            bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
+            text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
+            margin = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
+            chat_bubbles_html += f"""
+            <div style='max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {margin}'>
+                <b>{msg['role'].capitalize()}:</b> {msg['content']}
             </div>
+            """
 
-            <button id="wayne-floating-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 24px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 8px 25px rgba(59, 130, 246, 0.35); display: flex; align-items: center; gap: 8px; outline: none; pointer-events: auto; transform: scale(1); transition: transform 0.2s ease;">
-                <span>💬</span> Ask Wayne-AI
-            </button>
-        </div>
-
-        <script>
-            const pillBtn = document.getElementById('wayne-floating-pill');
-            const chatCard = document.getElementById('wayne-chat-card');
-            const closeBtn = document.getElementById('close-chat-pane');
-            const sendBtn = document.getElementById('send-chat-payload');
-            const inputField = document.getElementById('chat-input-box');
-            const scroller = document.getElementById('chat-scroller-node');
-
-            let isOpen = {st.session_state.chat_is_open};
-
-            function setDisplayState(open) {{
-                if (open) {{
-                    chatCard.style.display = 'flex';
-                    scroller.scrollTop = scroller.scrollHeight;
-                }} else {{
-                    chatCard.style.display = 'none';
-                }}
-            }}
-
-            setDisplayState(isOpen);
-
-            pillBtn.addEventListener('click', () => {{
-                isOpen = !isOpen;
-                setDisplayState(isOpen);
+        # Toggle interface modal view panel logic seamlessly
+        if st.session_state.chat_is_open:
+            st.markdown("### 🔮 Wayne-AI Workspace")
+            st.markdown(
+                f"""<div style="height: 250px; overflow-y: auto; padding: 15px; border: 1px solid #e5e7eb; border-radius: 16px; background: #fafafa; margin-bottom: 12px;">
+                    {chat_bubbles_html}
+                </div>""", 
+                unsafe_allow_html=True
+            )
+            
+            # Form submission keeps backend calculations highly stable
+            with st.form(key="chat_input_form", clear_on_submit=True):
+                user_msg = st.text_input(label="Your Query:", placeholder="Type your project question here...", label_visibility="collapsed")
+                submit_btn = st.form_submit_button("Send Message")
                 
-                const url = new URL(window.parent.location.href);
-                url.searchParams.set("panel_state", isOpen ? "true" : "false");
-                window.parent.history.replaceState({{}}, "", url.toString());
-            }});
+                if submit_btn and user_msg.strip():
+                    st.session_state.chat_history.append({"role": "user", "content": user_msg})
+                    reply = f"Wayne-AI here! I've received your query about: '{user_msg}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
+                    st.session_state.chat_history.append({"role": "assistant", "content": reply})
+                    st.rerun()
 
-            closeBtn.addEventListener('click', () => {{
-                isOpen = false;
-                setDisplayState(false);
-                const url = new URL(window.parent.location.href);
-                url.searchParams.set("panel_state", "false");
-                window.parent.history.replaceState({{}}, "", url.toString());
-            }});
-
-            function submitMessage() {{
-                const txt = inputField.value.trim();
-                if(!txt) return;
-                
-                const url = new URL(window.parent.location.href);
-                url.searchParams.set("msg", txt);
-                url.searchParams.set("panel_state", "true"); 
-                window.parent.location.href = url.toString();
-            }}
-
-            sendBtn.addEventListener('click', submitMessage);
-            inputField.addEventListener('keydown', (e) => {{
-                if(e.key === 'Enter') submitMessage();
-            }});
-        </script>
-    """, height=540)
+        # ---------- EXACT SINGLE LINE SPACE MARGIN BUTTON ----------
+        st.markdown('<div style="margin-top: 24px;"></div>', unsafe_allow_html=True)
+        
+        button_text = "Close Wayne-AI" if st.session_state.chat_is_open else "💬 Ask Wayne-AI"
+        if st.button(button_text):
+            st.session_state.chat_is_open = not st.session_state.chat_is_open
+            st.rerun()
