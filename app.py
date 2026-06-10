@@ -19,7 +19,7 @@ similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
 missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
-# Custom CSS targeting layout blocks, text classes, and precise floating coordinates
+# Custom CSS targeting layout blocks, navigation items, and the premium floating widget
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -47,7 +47,7 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- PURE FLEXBOX 3D GLASS ICON CONTAINER ---------- */
+    /* ---------- FLEXBOX 3D GLASS NAVIGATION ROW ---------- */
     .glass-icon-container {
         display: flex;
         justify-content: space-between;
@@ -63,24 +63,19 @@ st.markdown("""
         backdrop-filter: blur(12px) saturate(140%);
         -webkit-backdrop-filter: blur(12px) saturate(140%);
         border-radius: 24px;
-        padding: 4px; /* Perfectly hugs your image margins */
+        padding: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        
-        /* 3D Bevel Edge: Vivid top/left highlights, deep right/bottom structural tracking */
         border-top: 1px solid rgba(255, 255, 255, 0.7);
         border-left: 1px solid rgba(255, 255, 255, 0.7);
         border-right: 3px solid rgba(0, 0, 0, 0.12);
         border-bottom: 4px solid rgba(0, 0, 0, 0.18);
-        
-        /* Premium 3D drop shadow projecting right and down */
         box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
         transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
     }
 
-    /* Hover press effect: shifts down-right and softens the shadow shadow */
     .glass-icon-item:hover {
         background: rgba(255, 255, 255, 0.55);
         box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
@@ -90,7 +85,6 @@ st.markdown("""
         animation: single-shake-animation 0.4s ease-in-out;
     }
 
-    /* Constrain the embedded base64 graphics perfectly to container roundings */
     .glass-icon-item img {
         width: 100%;
         height: auto;
@@ -98,37 +92,62 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* ---------- TRUE FLOATING CHAT WIDGET EFFECT ---------- */
-    div.raised-floating-bot {
+    /* ---------- PREMIUM FLOATING WAYNE-AI WIDGET STYLE ---------- */
+    /* Absolute fixed placement anchoring to the bottom-right viewport viewport */
+    div.wayne-floating-anchor {
         position: fixed;
-        bottom: 45px; 
-        right: 45px;
+        bottom: 35px;
+        right: 35px;
         z-index: 999999;
-        transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    
-    div.raised-floating-bot:hover {
-        transform: translateY(-4px);
+
+    /* Target the base popover button wrapper to overwrite layout restrictions */
+    div.wayne-floating-anchor div[data-testid="stPopover"] {
+        background: transparent !important;
+        border: none !important;
     }
-    
-    div.raised-floating-bot button {
-        background-color: #1f77b4 !important;
+
+    /* Transform standard Streamlit buttons into a glowing gradient pill */
+    div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] {
+        background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) !important;
         color: white !important;
-        border-radius: 30px !important;
-        padding: 0.75rem 1.75rem !important;
-        box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 50px !important; /* Perfect pill style contour */
+        padding: 14px 28px !important;
         font-weight: 600 !important;
-        letter-spacing: 0.3px !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.4px !important;
+        box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.4) !important; /* Vivid purple-blue ambient glow */
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        height: 54px !important;
     }
-    
+
+    /* Smooth lift and intensified glow when interacting with the widget button */
+    div.wayne-floating-anchor button[data-testid="stPopoverActionButton"]:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0px 15px 35px rgba(168, 85, 247, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    }
+
+    /* Clean styling adjustment for the inner icon arrow */
+    div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] svg {
+        fill: white !important;
+        color: white !important;
+    }
+
+    /* Shape the layout and aesthetics of the chat bubble display panel */
     div[data-testid="stPopoverBody"] {
-        width: 390px !important;
-        max-height: 520px !important;
-        box-shadow: 0px 12px 36px rgba(0, 0, 0, 0.25) !important;
-        border-radius: 16px !important;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        backdrop-filter: blur(8px);
+        width: 400px !important;
+        max-height: 550px !important;
+        border-radius: 20px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.18) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -161,8 +180,7 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- FOOLPROOF 3D GLASS NAVIGATION ROW ----------
-        # Dynamic injection via formatted strings strings handles local serving flawlessly
+        # ---------- 3D GLASSMORPHIC NAVIGATION ROW ----------
         st.markdown(f"""
             <div class="glass-icon-container">
                 <div class="glass-icon-item"><img src="{home_b64}"></div>
@@ -239,10 +257,11 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- INTERACTIVE FLOATING RAISED POPOVER ----------
-st.markdown('<div class="raised-floating-bot">', unsafe_allow_html=True)
-with st.popover("🤖 Ask Wayne-AI"):
-    st.markdown("### 🤖 Wayne-AI Workspace")
+# ---------- MODERN PURPLE-BLUE GLOWING FLOATING POPOVER ----------
+st.markdown('<div class="wayne-floating-anchor">', unsafe_allow_html=True)
+# We embed an inline robot emoji directly alongside text inside the popover generator
+with st.popover("💬 Ask Wayne-AI"):
+    st.markdown("### 🔮 Wayne-AI Workspace")
     
     chat_container = st.container()
     user_input = st.chat_input("Type your project question here...")
