@@ -136,7 +136,7 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- STYLING INJECTIONS & FLOATING IFRAME POSITIONING ----------
+# ---------- STYLING INJECTIONS & FLOATING VIEWPORT OVERRIDES ----------
 st.markdown("""
     <style>
     .block-container {
@@ -206,13 +206,17 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* Keep the hidden Streamlit iframe at absolute zero layout position */
+    /* CRITICAL UPDATE: Anchors the HTML component iframe directly into the 
+       screen view space right beside the "Manage app" controller framework.
+    */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
         bottom: 0px !important;
-        right: 40px !important;
+        right: 160px !important;   /* Shifts it leftward to sit perfectly parallel with 'Manage app' */
+        width: 330px !important;
+        height: 520px !important;  /* Allotted bounding volume height to contain open chat views */
         overflow: visible !important;
-        z-index: 999999 !important;
+        z-index: 9999991 !important;
         border: none !important;
         background: transparent !important;
     }
@@ -220,7 +224,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Parse chat bubble records into layout streams cleanly
+# Parse chat bubble records into rendering structures safely
 chat_bubbles_html = ""
 for msg in st.session_state.chat_history:
     bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
@@ -234,11 +238,11 @@ for msg in st.session_state.chat_history:
     """
 
 
-# ---------- IFRAME SIDEBAR-TAB COMPONENT CONTAINER (MATCHING IMAGE DESIGN) ----------
+# ---------- PERSISTENT FLOATING COPTILOT WIDGET INJECTOR ----------
 st.components.v1.html(f"""
-    <div id="wayne-global-root" style="position: fixed; bottom: 0px; right: 0px; display: flex; flex-direction: column; align-items: flex-end; font-family: Arial, sans-serif; width: 320px;">
+    <div id="wayne-global-root" style="position: fixed; bottom: 0px; left: 0px; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; font-family: Arial, sans-serif; pointer-events: none;">
         
-        <div id="wayne-chat-card" style="display: none; width: 100%; height: 460px; background: white; border-left: 1px solid #c8d3df; border-top: 1px solid #c8d3df; box-shadow: -4px -4px 20px rgba(0,0,0,0.1); flex-direction: column; overflow: hidden;">
+        <div id="wayne-chat-card" style="display: none; width: 320px; height: 450px; background: white; border-left: 1px solid #c8d3df; border-top: 1px solid #c8d3df; box-shadow: -4px -4px 20px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; pointer-events: auto;">
             
             <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.15);">
                 <span style="font-weight: bold; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Support Chat</span>
@@ -254,7 +258,7 @@ st.components.v1.html(f"""
             </div>
         </div>
 
-        <div id="wayne-trigger-pill" style="background: #1f7bb6; color: white; border-top-left-radius: 4px; border-top-right-radius: 4px; padding: 10px 16px; font-weight: bold; font-size: 0.9rem; cursor: pointer; box-shadow: 0px -2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; width: 120px; margin-right: 15px; user-select: none;">
+        <div id="wayne-trigger-pill" style="background: #1f7bb6; color: white; border-top-left-radius: 4px; border-top-right-radius: 4px; padding: 10px 16px; font-weight: bold; font-size: 0.9rem; cursor: pointer; box-shadow: 0px -2px 10px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; width: 120px; height: 38px; box-sizing: border-box; pointer-events: auto; user-select: none;">
             <span style="display: flex; align-items: center; gap: 6px;">💬 Chat</span>
             <span id="pill-arrow-indicator" style="font-size: 0.7rem; opacity: 0.85;">➖</span>
         </div>
@@ -291,18 +295,14 @@ st.components.v1.html(f"""
                 if(card.style.display === 'none') {{
                     card.style.display = 'flex';
                     pill.style.width = '320px';
-                    pill.style.marginRight = '0px';
-                    pill.style.borderBottomLeftRadius = '0px';
-                    pill.style.borderBottomRightRadius = '0px';
                     arrow.innerHTML = '🗕';
                     scroller.scrollTop = scroller.scrollHeight;
                 }} else {{
                     card.style.display = 'none';
                     pill.style.width = '120px';
-                    pill.style.marginRight = '15px';
                     arrow.innerHTML = '➖';
                 }}
             }});
         }}, 50);
     </script>
-""", height=0)
+""", height=520)
