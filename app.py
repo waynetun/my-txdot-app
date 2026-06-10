@@ -1,11 +1,14 @@
 import streamlit as st
 import os
 from pypdf import PdfReader
-from openai import OpenAI
+import google.generativeai as genai
 
-st.set_page_config(layout="wide")
+# 1. SETUP: Configure the Free Google Brain
+if "GOOGLE_API_KEY" in st.secrets:
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
-# This function scans your GitHub files for PDFs and extracts their text
+# 2. DATA: PDF Reading Engine (The "Brain")
 @st.cache_data
 def get_pdf_knowledge():
     full_text = ""
@@ -18,33 +21,22 @@ def get_pdf_knowledge():
             except: continue
     return full_text
 
-# Load the data
 knowledge = get_pdf_knowledge()
 
-st.title("Wayne-AI: TxDOT Engineering Engine")
+# 3. LAYOUT: Your Custom TxDOT Dashboard
+st.set_page_config(layout="wide")
 
+# ... (Keep all your existing CSS and Custom HTML blocks here) ...
+
+# 4. INTEGRATION: When the user asks a question
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-if prompt := st.chat_input("Ask about specs, guides, or project items..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    with st.chat_message("assistant"):
-        # The AI is now 'fed' the PDF data inside this prompt
-        client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": f"You are Wayne-AI. Answer engineers based ONLY on this data: {knowledge}"},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        msg = response.choices[0].message.content
-        st.markdown(msg)
-        st.session_state.messages.append({"role": "assistant", "content": msg})
+# When the user interacts with your TxDOT interface, send the data to the brain
+if user_input := st.chat_input("Ask about your TxDOT specs..."):
+    # Send user_input + knowledge to the Gemini AI
+    prompt = f"Use this TxDOT data: {knowledge}\n\nUser Question: {user_input}"
+    response = model.generate_content(prompt)
+    
+    # Display result
+    st.markdown(response.text)
