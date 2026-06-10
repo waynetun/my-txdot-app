@@ -136,7 +136,7 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- STYLING INJECTIONS & IFRAME WRAPPER CONFIGURATION ----------
+# ---------- STYLING INJECTIONS & FLOATING IFRAME POSITIONING ----------
 st.markdown("""
     <style>
     .block-container {
@@ -206,11 +206,11 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* Force the Streamlit HTML engine box completely down out of document content metrics */
+    /* Keep the hidden Streamlit iframe at absolute zero layout position */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
         bottom: 0px !important;
-        right: 0px !important;
+        right: 40px !important;
         overflow: visible !important;
         z-index: 999999 !important;
         border: none !important;
@@ -220,7 +220,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Parse chat bubble records cleanly
+# Parse chat bubble records into layout streams cleanly
 chat_bubbles_html = ""
 for msg in st.session_state.chat_history:
     bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
@@ -228,32 +228,36 @@ for msg in st.session_state.chat_history:
     align_side = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
     
     chat_bubbles_html += f"""
-    <div style="max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
+    <div style="max-width: 85%; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
         <b>{msg['role'].capitalize()}:</b> {msg['content']}
     </div>
     """
 
 
-# ---------- IFRAME FLOATING WINDOW COMPONENT CONTAINER ----------
+# ---------- IFRAME SIDEBAR-TAB COMPONENT CONTAINER (MATCHING IMAGE DESIGN) ----------
 st.components.v1.html(f"""
-    <div id="wayne-global-root" style="position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
+    <div id="wayne-global-root" style="position: fixed; bottom: 0px; right: 0px; display: flex; flex-direction: column; align-items: flex-end; font-family: Arial, sans-serif; width: 320px;">
         
-        <div id="wayne-chat-card" style="display: none; width: 360px; height: 440px; background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 24px; box-shadow: 0px 12px 40px rgba(0,0,0,0.15); margin-bottom: 12px; flex-direction: column; overflow: hidden;">
-            <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; font-size: 0.95rem; letter-spacing: 0.3px;">🔮 Wayne-AI Workspace</span>
+        <div id="wayne-chat-card" style="display: none; width: 100%; height: 460px; background: white; border-left: 1px solid #c8d3df; border-top: 1px solid #c8d3df; box-shadow: -4px -4px 20px rgba(0,0,0,0.1); flex-direction: column; overflow: hidden;">
+            
+            <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.15);">
+                <span style="font-weight: bold; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Support Chat</span>
             </div>
-            <div id="chat-feed-scroller" style="flex: 1; padding: 16px; overflow-y: auto; background: #fafafa; display: flex; flex-direction: column;">
+
+            <div id="chat-feed-scroller" style="flex: 1; padding: 14px; overflow-y: auto; background: #ffffff; display: flex; flex-direction: column; border-bottom: 1px solid #e1e8ed;">
                 {chat_bubbles_html}
             </div>
-            <div style="padding: 10px 14px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
-                <input id="chat-input-field" type="text" placeholder="Type your project question here..." style="flex: 1; padding: 10px 14px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.85rem;" />
-                <button id="chat-send-btn" style="background: #3b82f6; color: white; border: none; padding: 0 16px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Send</button>
+
+            <div style="padding: 12px; background: #f4f7f9; display: flex; flex-direction: column; gap: 8px;">
+                <input id="chat-input-field" type="text" placeholder="Type your project question here..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
+                <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; width: 100%; transition: background 0.2s;">Start Chat</button>
             </div>
         </div>
 
-        <button id="wayne-trigger-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 24px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 8px 25px rgba(59, 130, 246, 0.35); display: flex; align-items: center; gap: 8px; outline: none; white-space: nowrap;">
-            <span>💬</span> Ask Wayne-AI
-        </button>
+        <div id="wayne-trigger-pill" style="background: #1f7bb6; color: white; border-top-left-radius: 4px; border-top-right-radius: 4px; padding: 10px 16px; font-weight: bold; font-size: 0.9rem; cursor: pointer; box-shadow: 0px -2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; width: 120px; margin-right: 15px; user-select: none;">
+            <span style="display: flex; align-items: center; gap: 6px;">💬 Chat</span>
+            <span id="pill-arrow-indicator" style="font-size: 0.7rem; opacity: 0.85;">➖</span>
+        </div>
     </div>
 
     <script>
@@ -263,6 +267,7 @@ st.components.v1.html(f"""
             const scroller = document.getElementById('chat-feed-scroller');
             const btn = document.getElementById('chat-send-btn');
             const input = document.getElementById('chat-input-field');
+            const arrow = document.getElementById('pill-arrow-indicator');
 
             if (scroller) {{
                 scroller.scrollTop = scroller.scrollHeight;
@@ -285,9 +290,17 @@ st.components.v1.html(f"""
             pill.addEventListener('click', () => {{
                 if(card.style.display === 'none') {{
                     card.style.display = 'flex';
+                    pill.style.width = '320px';
+                    pill.style.marginRight = '0px';
+                    pill.style.borderBottomLeftRadius = '0px';
+                    pill.style.borderBottomRightRadius = '0px';
+                    arrow.innerHTML = '🗕';
                     scroller.scrollTop = scroller.scrollHeight;
                 }} else {{
                     card.style.display = 'none';
+                    pill.style.width = '120px';
+                    pill.style.marginRight = '15px';
+                    arrow.innerHTML = '➖';
                 }}
             }});
         }}, 50);
