@@ -136,42 +136,56 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- STYLING INJECTIONS & FLOATING VIEWPORT OVERRIDES ----------
-st.markdown("""
+# Parse chat bubble records into rendering structures safely
+chat_bubbles_html = ""
+for msg in st.session_state.chat_history:
+    bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
+    text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
+    align_side = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
+    
+    chat_bubbles_html += f"""
+    <div style="max-width: 85%; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
+        <b>{msg['role'].capitalize()}:</b> {msg['content']}
+    </div>
+    """
+
+
+# ---------- DIRECT INJECTION: VIEWPORT WIDGET & GLOBAL STYLES ----------
+st.markdown(f"""
     <style>
-    .block-container {
+    .block-container {{
         padding-top: 4.5rem !important;
         padding-bottom: 2rem !important;
-    }
+    }}
 
     /* Single Shake Hover Animation */
-    @keyframes single-shake-animation {
-        0% { transform: translate(0px, 0px) rotate(0deg); }
-        15% { transform: translate(-2px, 1px) rotate(-1deg); }
-        30% { transform: translate(2px, -1px) rotate(1deg); }
-        45% { transform: translate(-2px, -1px) rotate(-1deg); }
-        60% { transform: translate(2px, 1px) rotate(1deg); }
-        75% { transform: translate(-1px, 0px) rotate(0deg); }
-        100% { transform: translate(0px, 0px) rotate(0deg); }
-    }
+    @keyframes single-shake-animation {{
+        0% {{ transform: translate(0px, 0px) rotate(0deg); }}
+        15% {{ transform: translate(-2px, 1px) rotate(-1deg); }}
+        30% {{ transform: translate(2px, -1px) rotate(1deg); }}
+        45% {{ transform: translate(-2px, -1px) rotate(-1deg); }}
+        60% {{ transform: translate(2px, 1px) rotate(1deg); }}
+        75% {{ transform: translate(-1px, 0px) rotate(0deg); }}
+        100% {{ transform: translate(0px, 0px) rotate(0deg); }}
+    }}
 
-    .shaky-item:hover {
+    .shaky-item:hover {{
         display: block;
         animation: single-shake-animation 0.4s ease-in-out;
         animation-iteration-count: 1;
         cursor: pointer;
-    }
+    }}
 
-    .glass-icon-container {
+    .glass-icon-container {{
         display: flex;
         justify-content: space-between;
         gap: 16px;
         width: 100%;
         margin-top: 15px;
         margin-bottom: 25px;
-    }
+    }}
 
-    .glass-icon-item {
+    .glass-icon-item {{
         flex: 1;
         background: rgba(255, 255, 255, 0.35);
         backdrop-filter: blur(12px) saturate(140%);
@@ -188,62 +202,41 @@ st.markdown("""
         box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
         transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
-    }
+    }}
 
-    .glass-icon-item:hover {
+    .glass-icon-item:hover {{
         background: rgba(255, 255, 255, 0.55);
         box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
         transform: translate(3px, 3px);
         border-right: 1px solid rgba(0, 0, 0, 0.05);
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         animation: single-shake-animation 0.4s ease-in-out;
-    }
+    }}
 
-    .glass-icon-item img {
+    .glass-icon-item img {{
         width: 100%;
         height: auto;
         display: block;
         border-radius: 20px;
-    }
+    }}
 
-    /* CRITICAL FIX: Allow clicks to pass straight through the invisible components container */
-    iframe[title="st.components.v1.html"] {
+    /* HIDE STREAMLIT'S SCRIPT IFRAME SO IT DOES NOT BLOCK CLICKS */
+    iframe[title="st.components.v1.html"] {{
         position: fixed !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        width: 380px !important;
-        height: 560px !important;
-        z-index: 9999999 !important;
+        width: 0px !important;
+        height: 0px !important;
         border: none !important;
-        background: transparent !important;
-        pointer-events: none !important; /* Passes clicks downward to your page */
-    }
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }}
     </style>
-""", unsafe_allow_html=True)
 
-
-# Parse chat bubble records into rendering structures safely
-chat_bubbles_html = ""
-for msg in st.session_state.chat_history:
-    bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
-    text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
-    align_side = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
-    
-    chat_bubbles_html += f"""
-    <div style="max-width: 85%; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
-        <b>{msg['role'].capitalize()}:</b> {msg['content']}
-    </div>
-    """
-
-
-# ---------- PERSISTENT INJECTED COPTILOT WIDGET ----------
-st.components.v1.html(f"""
-    <div id="wayne-floating-pill" style="pointer-events: auto !important; position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #6366f1; color: white; padding: 12px 22px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 50px; box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4); user-select: none; transition: all 0.2s ease-in-out; z-index: 99999999;">
+    <div id="wayne-floating-pill" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #6366f1; color: white; padding: 12px 22px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 50px; box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4); user-select: none; transition: all 0.2s ease-in-out; z-index: 999999;">
         <span style="font-size: 1.1rem; display: flex; align-items: center;">💬</span>
         <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Ask Wayne-AI</span>
     </div>
 
-    <div id="wayne-chat-card" style="pointer-events: auto !important; display: none; position: fixed; bottom: 85px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid #cbd5e1; border-radius: 16px; box-shadow: 0px 8px 32px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 99999999;">
+    <div id="wayne-chat-card" style="display: none; position: fixed; bottom: 85px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid #cbd5e1; border-radius: 16px; box-shadow: 0px 8px 32px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 999999;">
         
         <div style="background: #2b3e50; padding: 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
@@ -259,71 +252,85 @@ st.components.v1.html(f"""
             <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; width: 100%; transition: background 0.15s;">Send Query</button>
         </div>
     </div>
+""", unsafe_allow_html=True)
 
+
+# ---------- ISOLATED EVENT CONTROLLER ENGINE ----------
+st.components.v1.html("""
     <script>
-        function initializeFloatingChat() {{
+        function initializeFloatingChat() {
             const parentDoc = window.parent.document;
-            const targetPill = document.getElementById('wayne-floating-pill');
-            const targetCard = document.getElementById('wayne-chat-card');
-            const closeBtn = document.getElementById('close-chat-card');
-            
-            // Append elements straight to the top level body to keep them active
-            parentDoc.body.appendChild(targetPill);
-            parentDoc.body.appendChild(targetCard);
+            const targetPill = parentDoc.getElementById('wayne-floating-pill');
+            const targetCard = parentDoc.getElementById('wayne-chat-card');
+            const closeBtn = parentDoc.getElementById('close-chat-card');
+            const scroller = parentDoc.getElementById('chat-feed-scroller');
+            const sendBtn = parentDoc.getElementById('chat-send-btn');
+            const inputField = parentDoc.getElementById('chat-input-field');
 
-            const scroller = document.getElementById('chat-feed-scroller');
-            const sendBtn = document.getElementById('chat-send-btn');
-            const inputField = document.getElementById('chat-input-field');
+            if (!targetPill || !targetCard) return;
 
-            if (scroller) {{
+            if (scroller) {
                 scroller.scrollTop = scroller.scrollHeight;
-            }}
+            }
 
-            // Add Hover Animations
-            targetPill.addEventListener('mouseenter', () => {{
+            // Button Hover FX
+            targetPill.addEventListener('mouseenter', () => {
                 targetPill.style.transform = 'translateY(-2px)';
                 targetPill.style.boxShadow = '0px 6px 20px rgba(99, 102, 241, 0.5)';
-            }});
-            targetPill.addEventListener('mouseleave', () => {{
+            });
+            targetPill.addEventListener('mouseleave', () => {
                 targetPill.style.transform = 'translateY(0px)';
                 targetPill.style.boxShadow = '0px 4px 16px rgba(99, 102, 241, 0.4)';
-            }});
+            });
 
-            function sendPayload() {{
+            function sendPayload() {
                 const text = inputField.value.trim();
                 if(!text) return;
                 
                 const currentUrl = new URL(window.parent.location.href);
                 currentUrl.searchParams.set("msg", text);
                 window.parent.location.href = currentUrl.toString();
-            }}
+            }
 
-            sendBtn.addEventListener('click', sendPayload);
-            inputField.addEventListener('keydown', (e) => {{
+            // Remove any old event listeners before establishing new mappings
+            sendBtn.replaceWith(sendBtn.cloneNode(true));
+            inputField.replaceWith(inputField.cloneNode(true));
+            targetPill.replaceWith(targetPill.cloneNode(true));
+            closeBtn.replaceWith(closeBtn.cloneNode(true));
+
+            const newSendBtn = parentDoc.getElementById('chat-send-btn');
+            const newInputField = parentDoc.getElementById('chat-input-field');
+            const newTargetPill = parentDoc.getElementById('wayne-floating-pill');
+            const newCloseBtn = parentDoc.getElementById('close-chat-card');
+
+            newSendBtn.addEventListener('click', sendPayload);
+            newInputField.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') sendPayload();
-            }});
+            });
 
             // Toggle Open/Close functionality on click
-            targetPill.addEventListener('click', (e) => {{
+            newTargetPill.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                if(targetCard.style.display === 'none' || !targetCard.style.display) {{
+                if(targetCard.style.display === 'none' || !targetCard.style.display) {
                     targetCard.style.display = 'flex';
                     if (scroller) scroller.scrollTop = scroller.scrollHeight;
-                }} else {{
+                } else {
                     targetCard.style.display = 'none';
-                }}
-            }});
+                }
+            });
 
-            closeBtn.addEventListener('click', () => {{
+            newCloseBtn.addEventListener('click', () => {
                 targetCard.style.display = 'none';
-            }});
-        }}
+            });
+        }
 
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {{
-            initializeFloatingChat();
-        }} else {{
-            document.addEventListener('DOMContentLoaded', initializeFloatingChat);
-        }}
+        // Run checking interval to verify DOM elements exist on parent window
+        const attachedInterval = setInterval(() => {
+            if (window.parent.document.getElementById('wayne-floating-pill')) {
+                initializeFloatingChat();
+                clearInterval(attachedInterval);
+            }
+        }, 100);
     </script>
-""", height=0)
+""")
