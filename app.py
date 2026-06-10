@@ -37,74 +37,58 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- PREMIUM 3D GLASSMORPHISM NAVIGATION ICONS ---------- */
-    .glass-3d-card {
-        background: rgba(255, 255, 255, 0.45);
-        backdrop-filter: blur(12px) saturate(160%);
-        -webkit-backdrop-filter: blur(12px) saturate(160%);
+    /* ---------- PREMIUM 3D GLASSMORPHISM CONTAINER FOR IMAGES ---------- */
+    .glass-3d-wrapper {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px) saturate(140%);
+        -webkit-backdrop-filter: blur(10px) saturate(140%);
         border-radius: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.7);
-        border-left: 1px solid rgba(255, 255, 255, 0.7);
-        border-right: 2px solid rgba(0, 0, 0, 0.12);
-        border-bottom: 3px solid rgba(0, 0, 0, 0.18);
-        box-shadow: 5px 6px 15px rgba(0, 0, 0, 0.08);
-        padding: 14px 8px;
-        text-align: center;
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 0.95rem;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        padding: 8px;
+        /* Shiny highlight edges on top/left, soft depth borders on right/bottom */
+        border-top: 1px solid rgba(255, 255, 255, 0.6);
+        border-left: 1px solid rgba(255, 255, 255, 0.6);
+        border-right: 2.5px solid rgba(0, 0, 0, 0.15);
+        border-bottom: 3.5px solid rgba(0, 0, 0, 0.22);
+        /* Distinct shadow offset toward the right and bottom corners */
+        box-shadow: 6px 7px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 55px;
     }
 
-    /* Hover effect for 3D Glass elements */
-    .glass-3d-card:hover {
-        background: rgba(255, 255, 255, 0.65);
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    /* Interactive 3D press effect on hover */
+    .glass-3d-wrapper:hover {
+        background: rgba(255, 255, 255, 0.55);
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.06);
         transform: translate(3px, 3px);
         border-right: 1px solid rgba(0, 0, 0, 0.05);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    /* Active styling to preserve the primary blue visual anchor */
-    .glass-3d-card-active {
-        background: linear-gradient(135deg, rgba(31, 119, 180, 0.85), rgba(21, 87, 133, 0.95));
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+    /* Active indicator for Home element */
+    .glass-3d-wrapper-active {
+        background: rgba(31, 119, 180, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border-radius: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.4);
-        border-left: 1px solid rgba(255, 255, 255, 0.4);
-        border-right: 2px solid rgba(0, 0, 0, 0.25);
-        border-bottom: 4px solid rgba(0, 0, 0, 0.35);
-        box-shadow: 5px 6px 18px rgba(31, 119, 180, 0.3);
-        padding: 14px 8px;
-        text-align: center;
-        font-weight: 700;
-        color: #ffffff;
-        font-size: 0.95rem;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        padding: 8px;
+        border-top: 1px solid rgba(31, 119, 180, 0.4);
+        border-left: 1px solid rgba(31, 119, 180, 0.4);
+        border-right: 3px solid rgba(0, 0, 0, 0.25);
+        border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+        box-shadow: 6px 7px 18px rgba(31, 119, 180, 0.2);
+        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 55px;
     }
     
-    .glass-3d-card-active:hover {
+    .glass-3d-wrapper-active:hover {
         transform: translate(3px, 3px);
-        box-shadow: 2px 2px 6px rgba(31, 119, 180, 0.15);
+        box-shadow: 2px 2px 6px rgba(31, 119, 180, 0.1);
         border-right: 1px solid rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-    }
-
-    /* Emoji spacer icon formatting configuration */
-    .glass-icon-emoji {
-        font-size: 1.25rem;
-        margin-bottom: 4px;
     }
 
     /* ---------- TRUE FLOATING CHAT WIDGET EFFECT ---------- */
@@ -158,10 +142,7 @@ with container:
         # ---------- HEADER ----------
         col1, col2 = st.columns([1, 4])
         with col1:
-            try:
-                st.image("txdot-logo-1000x500.png", width=180)
-            except:
-                st.subheader("TxDOT")
+            st.image("txdot-logo-1000x500.png", width=180)
         with col2:
             st.markdown("""
             <div style="display: flex; align-items: center; padding-top: 10px;">
@@ -173,26 +154,43 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- 3D GLASSMORPHISM NAVIGATION ROW ----------
+        # ---------- NAVIGATION ICON ROW (WITH 3D GLASS SHELL) ----------
         st.markdown('<div class="shaky-row-container">', unsafe_allow_html=True)
         icon_cols = st.columns(6)
         
         with icon_cols[0]:
-            st.markdown('<div class="glass-3d-card-active"><span class="glass-icon-emoji">🏠</span>Home</div>', unsafe_allow_html=True)
+            st.markdown('<div class="glass-3d-wrapper-active">', unsafe_allow_html=True)
+            st.image("HomeCopilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[1]:
-            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">❓</span>Help</div>', unsafe_allow_html=True)
+            st.markdown('<div class="glass-3d-wrapper">', unsafe_allow_html=True)
+            st.image("HelpCoPilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[2]:
-            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">📄</span>Sample</div>', unsafe_allow_html=True)
+            st.markdown('<div class="glass-3d-wrapper">', unsafe_allow_html=True)
+            st.image("SampleCopilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[3]:
-            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">🔎</span>Find Similar Projects</div>', unsafe_allow_html=True)
+            st.markdown('<div class="glass-3d-wrapper">', unsafe_allow_html=True)
+            st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[4]:
-            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">📊</span>Identify Missing Items</div>', unsafe_allow_html=True)
+            st.markdown('<div class="glass-3d-wrapper">', unsafe_allow_html=True)
+            st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with icon_cols[5]:
-            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">🧱</span>Verify Major Quantities</div>', unsafe_allow_html=True)
+            st.markdown('<div class="glass-3d-wrapper">', unsafe_allow_html=True)
+            st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
             
         st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
         # ---------- WELCOME SECTION ----------
         st.markdown("""
