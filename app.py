@@ -5,6 +5,12 @@ import os
 # 1. Page Configuration
 st.set_page_config(layout="wide")
 
+# 2. Initialize Native Session State for Wayne-AI Chat History
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = [
+        {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
+    ]
+
 # Helper function to safely convert local image files into base64 HTML strings
 def get_image_base64(path):
     if os.path.exists(path):
@@ -19,6 +25,78 @@ sample_b64 = get_image_base64("SampleCopilot.png")
 similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
 missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
+
+# ---------- GLOBAL HOVER & GRID STYLES ----------
+st.markdown("""
+    <style>
+    .block-container {
+        padding-top: 4.5rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    /* Single Shake Hover Animation */
+    @keyframes single-shake-animation {
+        0% { transform: translate(0px, 0px) rotate(0deg); }
+        15% { transform: translate(-2px, 1px) rotate(-1deg); }
+        30% { transform: translate(2px, -1px) rotate(1deg); }
+        45% { transform: translate(-2px, -1px) rotate(-1deg); }
+        60% { transform: translate(2px, 1px) rotate(1deg); }
+        75% { transform: translate(-1px, 0px) rotate(0deg); }
+        100% { transform: translate(0px, 0px) rotate(0deg); }
+    }
+
+    .shaky-item:hover {
+        display: block;
+        animation: single-shake-animation 0.4s ease-in-out;
+        animation-iteration-count: 1;
+        cursor: pointer;
+    }
+
+    .glass-icon-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
+        margin-top: 15px;
+        margin-bottom: 25px;
+    }
+
+    .glass-icon-item {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+        border-radius: 24px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.7);
+        border-left: 1px solid rgba(255, 255, 255, 0.7);
+        border-right: 3px solid rgba(0, 0, 0, 0.12);
+        border-bottom: 4px solid rgba(0, 0, 0, 0.18);
+        box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+    }
+
+    .glass-icon-item:hover {
+        background: rgba(255, 255, 255, 0.55);
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
+        transform: translate(3px, 3px);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        animation: single-shake-animation 0.4s ease-in-out;
+    }
+
+    .glass-icon-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 
 # ---------- MAIN DASHBOARD LAYOUT GRID ----------
@@ -119,111 +197,37 @@ with container:
         </div>
         """, unsafe_allow_html=True)
 
+        st.markdown("<br><hr><br>", unsafe_allow_html=True)
 
-# ---------- CSS STYLING & FLOATING LINK INJECTION ----------
-# Replace 'https://your-copilot-url.com' with the actual link to your chatbot portal
-copilot_portal_url = "https://your-copilot-url.com"
+        # ---------- NATIVE INTERACTIVE CHAT WORKSPACE ----------
+        st.markdown("""
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <span style="font-size: 1.8rem;">🔮</span>
+                <h2 style="margin: 0; font-weight: bold; color: #2b3e50;">Wayne-AI Workspace</h2>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Chat Box Container Box
+        chat_container = st.container(height=380, border=True)
+        
+        with chat_container:
+            for msg in st.session_state.chat_history:
+                with st.chat_message(msg["role"]):
+                    st.write(msg["content"])
 
-st.markdown(f"""
-    <style>
-    .block-container {{
-        padding-top: 4.5rem !important;
-        padding-bottom: 2rem !important;
-    }}
-
-    /* Single Shake Hover Animation */
-    @keyframes single-shake-animation {{
-        0% {{ transform: translate(0px, 0px) rotate(0deg); }}
-        15% {{ transform: translate(-2px, 1px) rotate(-1deg); }}
-        30% {{ transform: translate(2px, -1px) rotate(1deg); }}
-        45% {{ transform: translate(-2px, -1px) rotate(-1deg); }}
-        60% {{ transform: translate(2px, 1px) rotate(1deg); }}
-        75% {{ transform: translate(-1px, 0px) rotate(0deg); }}
-        100% {{ transform: translate(0px, 0px) rotate(0deg); }}
-    }}
-
-    .shaky-item:hover {{
-        display: block;
-        animation: single-shake-animation 0.4s ease-in-out;
-        animation-iteration-count: 1;
-        cursor: pointer;
-    }}
-
-    .glass-icon-container {{
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        width: 100%;
-        margin-top: 15px;
-        margin-bottom: 25px;
-    }}
-
-    .glass-icon-item {{
-        flex: 1;
-        background: rgba(255, 255, 255, 0.35);
-        backdrop-filter: blur(12px) saturate(140%);
-        -webkit-backdrop-filter: blur(12px) saturate(140%);
-        border-radius: 24px;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-top: 1px solid rgba(255, 255, 255, 0.7);
-        border-left: 1px solid rgba(255, 255, 255, 0.7);
-        border-right: 3px solid rgba(0, 0, 0, 0.12);
-        border-bottom: 4px solid rgba(0, 0, 0, 0.18);
-        box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
-        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-        cursor: pointer;
-    }}
-
-    .glass-icon-item:hover {{
-        background: rgba(255, 255, 255, 0.55);
-        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
-        transform: translate(3px, 3px);
-        border-right: 1px solid rgba(0, 0, 0, 0.05);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        animation: single-shake-animation 0.4s ease-in-out;
-    }}
-
-    .glass-icon-item img {{
-        width: 100%;
-        height: auto;
-        display: block;
-        border-radius: 20px;
-    }}
-
-    /* Floating Pill Button Styling */
-    .floating-wayne-link {{
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background: #6366f1;
-        color: white !important;
-        padding: 14px 24px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        text-decoration: none !important;
-        border-radius: 50px;
-        box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4);
-        transition: all 0.2s ease-in-out;
-        z-index: 999999;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }}
-
-    .floating-wayne-link:hover {{
-        transform: translateY(-3px);
-        background: #4f46e5;
-        box-shadow: 0px 6px 20px rgba(99, 102, 241, 0.6);
-    }}
-    </style>
-
-    <a href="{copilot_portal_url}" target="_blank" class="floating-wayne-link">
-        <span style="font-size: 1.1rem; display: flex; align-items: center;">💬</span>
-        <span>Ask Wayne-AI</span>
-    </a>
-""", unsafe_allow_html=True)
+        # Capture text entry seamlessly and process answers
+        if user_query := st.chat_input("Ask Wayne-AI about TxDOT historical item parameters..."):
+            # Display user message instantly
+            with chat_container:
+                with st.chat_message("user"):
+                    st.markdown(user_query)
+            st.session_state.chat_history.append({"role": "user", "content": user_query})
+            
+            # Formulate automatic engineering system response logic
+            bot_reply = f"Wayne-AI here! I've received your query about: '{user_query}'. Let me pull from the TxDOT historical dataset parameters to build a proactive analysis for you."
+            
+            with chat_container:
+                with st.chat_message("assistant"):
+                    st.markdown(bot_reply)
+            st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+            st.rerun()
