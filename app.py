@@ -342,3 +342,5 @@ with ai_layer:
             inputField.addEventListener('keydown', (e) => {{
                 if(e.key === 'Enter') submitMessage();
             }});
+        </script>
+    """, height=540)
