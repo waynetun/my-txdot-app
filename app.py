@@ -37,8 +37,77 @@ st.markdown("""
         cursor: pointer;
     }
 
+    /* ---------- PREMIUM 3D GLASSMORPHISM NAVIGATION ICONS ---------- */
+    .glass-3d-card {
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
+        border-radius: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.7);
+        border-left: 1px solid rgba(255, 255, 255, 0.7);
+        border-right: 2px solid rgba(0, 0, 0, 0.12);
+        border-bottom: 3px solid rgba(0, 0, 0, 0.18);
+        box-shadow: 5px 6px 15px rgba(0, 0, 0, 0.08);
+        padding: 14px 8px;
+        text-align: center;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 55px;
+    }
+
+    /* Hover effect for 3D Glass elements */
+    .glass-3d-card:hover {
+        background: rgba(255, 255, 255, 0.65);
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        transform: translate(3px, 3px);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* Active styling to preserve the primary blue visual anchor */
+    .glass-3d-card-active {
+        background: linear-gradient(135deg, rgba(31, 119, 180, 0.85), rgba(21, 87, 133, 0.95));
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        border-left: 1px solid rgba(255, 255, 255, 0.4);
+        border-right: 2px solid rgba(0, 0, 0, 0.25);
+        border-bottom: 4px solid rgba(0, 0, 0, 0.35);
+        box-shadow: 5px 6px 18px rgba(31, 119, 180, 0.3);
+        padding: 14px 8px;
+        text-align: center;
+        font-weight: 700;
+        color: #ffffff;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 55px;
+    }
+    
+    .glass-3d-card-active:hover {
+        transform: translate(3px, 3px);
+        box-shadow: 2px 2px 6px rgba(31, 119, 180, 0.15);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    /* Emoji spacer icon formatting configuration */
+    .glass-icon-emoji {
+        font-size: 1.25rem;
+        margin-bottom: 4px;
+    }
+
     /* ---------- TRUE FLOATING CHAT WIDGET EFFECT ---------- */
-    /* Fixed viewport placement - raised beautifully off the floor and wall */
     div.raised-floating-bot {
         position: fixed;
         bottom: 45px; 
@@ -47,12 +116,10 @@ st.markdown("""
         transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     
-    /* Subtle lifting float movement when hovering over the toggle trigger */
     div.raised-floating-bot:hover {
         transform: translateY(-4px);
     }
     
-    /* Style the popover toggle button to look like an elevated floating pill */
     div.raised-floating-bot button {
         background-color: #1f77b4 !important;
         color: white !important;
@@ -64,7 +131,6 @@ st.markdown("""
         letter-spacing: 0.3px !important;
     }
     
-    /* Popover panel overlay enhancements */
     div[data-testid="stPopoverBody"] {
         width: 390px !important;
         max-height: 520px !important;
@@ -92,7 +158,10 @@ with container:
         # ---------- HEADER ----------
         col1, col2 = st.columns([1, 4])
         with col1:
-            st.image("txdot-logo-1000x500.png", width=180)
+            try:
+                st.image("txdot-logo-1000x500.png", width=180)
+            except:
+                st.subheader("TxDOT")
         with col2:
             st.markdown("""
             <div style="display: flex; align-items: center; padding-top: 10px;">
@@ -104,18 +173,26 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- NAVIGATION ICON ROW ----------
+        # ---------- 3D GLASSMORPHISM NAVIGATION ROW ----------
         st.markdown('<div class="shaky-row-container">', unsafe_allow_html=True)
         icon_cols = st.columns(6)
-        with icon_cols[0]: st.image("HomeCopilot.png", use_container_width=True)
-        with icon_cols[1]: st.image("HelpCoPilot.png", use_container_width=True)
-        with icon_cols[2]: st.image("SampleCopilot.png", use_container_width=True)
-        with icon_cols[3]: st.image("FindSimilarProjectCoPilot.png", use_container_width=True)
-        with icon_cols[4]: st.image("IdentifyMissingItemsCopilot.png", use_container_width=True)
-        with icon_cols[5]: st.image("VerifyMajorQuantitiesCoPilot.png", use_container_width=True)
+        
+        with icon_cols[0]:
+            st.markdown('<div class="glass-3d-card-active"><span class="glass-icon-emoji">🏠</span>Home</div>', unsafe_allow_html=True)
+        with icon_cols[1]:
+            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">❓</span>Help</div>', unsafe_allow_html=True)
+        with icon_cols[2]:
+            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">📄</span>Sample</div>', unsafe_allow_html=True)
+        with icon_cols[3]:
+            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">🔎</span>Find Similar Projects</div>', unsafe_allow_html=True)
+        with icon_cols[4]:
+            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">📊</span>Identify Missing Items</div>', unsafe_allow_html=True)
+        with icon_cols[5]:
+            st.markdown('<div class="glass-3d-card"><span class="glass-icon-emoji">🧱</span>Verify Major Quantities</div>', unsafe_allow_html=True)
+            
         st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
 
         # ---------- WELCOME SECTION ----------
         st.markdown("""
@@ -187,26 +264,14 @@ st.markdown('<div class="raised-floating-bot">', unsafe_allow_html=True)
 with st.popover("🤖 Ask Wayne-AI"):
     st.markdown("### 🤖 Wayne-AI Workspace")
     
-    # Create a layout block container to keep historical logs ordered neatly
     chat_container = st.container()
-    
-    # Capture user string inputs
     user_input = st.chat_input("Type your project question here...")
     
     if user_input:
-        # Append User input details
         st.session_state.chat_history.append({"role": "user", "content": user_input})
-        
-        # -------------------------------------------------------------
-        # BACKEND INTEGRATION NOTE:
-        # Replace the mock reply logic below with your live API calls:
-        # response = client.chat.completions.create(model="...", messages=...)
-        # copilot_reply = response.choices[0].message.content
-        # -------------------------------------------------------------
         copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
 
-    # Always render the historical list logs sequentially inside the workspace panel block
     with chat_container:
         for message in st.session_state.chat_history:
             with st.chat_message(message["role"]):
