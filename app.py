@@ -19,7 +19,7 @@ similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
 missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
-# Custom CSS targeting layout blocks, navigation items, and the premium floating widget
+# Custom CSS targeting layout blocks, text classes, and precise floating coordinates
 st.markdown("""
     <style>
     /* Reduce vertical padding between blocks for tighter, consistent spacing */
@@ -92,26 +92,28 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* ---------- ABSOLUTE WEBSCREEN CORNER FLOATING WAYNE-AI WIDGET ---------- */
-    /* This overrides Streamlit's structural grid to pin it to the screen corner permanently */
+    /* ---------- TRUE FIXED SCREEN-CORNER FLOATING ANCHOR ---------- */
+    /* Breaking cleanly out of layout constraints by forcing absolute window coordinates */
     div.wayne-floating-anchor {
         position: fixed !important;
         bottom: 30px !important;
         right: 30px !important;
-        left: auto !important; /* Overrides any accidental left alignment */
+        left: auto !important;
         top: auto !important;
-        z-index: 999999 !important; /* Keeps it layered above all content */
+        z-index: 999999 !important; /* Layers explicitly over all site elements */
         width: auto !important;
+        height: auto !important;
     }
 
-    /* Target the popover layout structure natively */
+    /* Completely isolate Streamlit popover block styling rules from shifting margins */
     div.wayne-floating-anchor div[data-testid="stPopover"] {
         background: transparent !important;
         border: none !important;
-        display: inline-block !important;
+        display: block !important;
+        width: auto !important;
     }
 
-    /* Transform button into a fluid, glowing purple-blue pill gradient */
+    /* Convert standard popover trigger to a glowing gradient pill */
     div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] {
         background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) !important;
         color: white !important;
@@ -130,30 +132,32 @@ st.markdown("""
         width: auto !important;
     }
 
-    /* Lift interaction state on hover */
+    /* Interaction state animation rules */
     div.wayne-floating-anchor button[data-testid="stPopoverActionButton"]:hover {
         transform: translateY(-4px) !important;
         box-shadow: 0px 14px 35px rgba(168, 85, 247, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* Enforce white color for the dropdown arrow SVG */
+    /* Keep downstream structural icons matching clean white styles */
     div.wayne-floating-anchor button[data-testid="stPopoverActionButton"] svg {
         fill: white !important;
         color: white !important;
     }
 
-    /* Styling specifications for the active chat dialog container box */
+    /* ---------- ABSOLUTE VIEWPORT POSITIONED CHAT SHELL ---------- */
+    /* Snaps the interface layout box securely directly on top of the pill trigger icon */
     div[data-testid="stPopoverBody"] {
         position: fixed !important;
-        bottom: 95px !important; /* Sits perfectly right above the pill widget */
+        bottom: 95px !important;
         right: 30px !important;
         left: auto !important;
+        top: auto !important;
         width: 380px !important;
         max-height: 500px !important;
         border-radius: 20px !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        background: rgba(255, 255, 255, 0.9) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
         box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2) !important;
@@ -266,8 +270,8 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- MODERN ABSOLUTE SCREEN CORNER FLOATING POPOVER ----------
-# Placing this block entirely outside structural columns locks it to the window viewport coordinates
+# ---------- ABSOLUTE SCREEN EDGE FLOATING WIDGET BLOCK ----------
+# Keeping this block completely isolated outside layout modules locks it permanently to the browser window edges
 st.markdown('<div class="wayne-floating-anchor">', unsafe_allow_html=True)
 with st.popover("💬 Ask Wayne-AI"):
     st.markdown("### 🔮 Wayne-AI Workspace")
