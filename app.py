@@ -12,7 +12,6 @@ if "chat_history" not in st.session_state:
     ]
 
 # ---------- PARSE INCOMING CHAT MESSAGES ----------
-# Captures incoming query payloads sent back from the floating iframe
 incoming_msg = st.query_params.get("msg", "")
 if incoming_msg:
     st.session_state.chat_history.append({"role": "user", "content": incoming_msg})
@@ -36,156 +35,6 @@ sample_b64 = get_image_base64("SampleCopilot.png")
 similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
 missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
-
-
-# Compile chat message logs into static HTML blocks cleanly
-chat_bubbles_html = ""
-for msg in st.session_state.chat_history:
-    bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
-    text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
-    align_side = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
-    
-    chat_bubbles_html += f"""
-    <div style="max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
-        <b>{msg['role'].capitalize()}:</b> {msg['content']}
-    </div>
-    """
-
-
-# ---------- SYSTEM-WIDE GLOBAL CSS & FLOATING WAYNE-AI ENGINE ----------
-# By injecting Wayne-AI straight inside the global markdown CSS block,
-# it takes up ZERO layout room on the screen!
-st.markdown(f"""
-    <style>
-    /* Clean up page margins */
-    .block-container {{
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
-    }}
-
-    /* Single Shake Hover Animation */
-    @keyframes single-shake-animation {{
-        0% {{ transform: translate(0px, 0px) rotate(0deg); }}
-        15% {{ transform: translate(-2px, 1px) rotate(-1deg); }}
-        30% {{ transform: translate(2px, -1px) rotate(1deg); }}
-        45% {{ transform: translate(-2px, -1px) rotate(-1deg); }}
-        60% {{ transform: translate(2px, 1px) rotate(1deg); }}
-        75% {{ transform: translate(-1px, 0px) rotate(0deg); }}
-        100% {{ transform: translate(0px, 0px) rotate(0deg); }}
-    }}
-
-    .shaky-item:hover {{
-        display: block;
-        animation: single-shake-animation 0.4s ease-in-out;
-        animation-iteration-count: 1;
-        cursor: pointer;
-    }}
-
-    /* Flexbox Glass Navigation Cards */
-    .glass-icon-container {{
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        width: 100%;
-        margin-top: 15px;
-        margin-bottom: 25px;
-    }}
-
-    .glass-icon-item {{
-        flex: 1;
-        background: rgba(255, 255, 255, 0.35);
-        backdrop-filter: blur(12px) saturate(140%);
-        -webkit-backdrop-filter: blur(12px) saturate(140%);
-        border-radius: 24px;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-top: 1px solid rgba(255, 255, 255, 0.7);
-        border-left: 1px solid rgba(255, 255, 255, 0.7);
-        border-right: 3px solid rgba(0, 0, 0, 0.12);
-        border-bottom: 4px solid rgba(0, 0, 0, 0.18);
-        box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
-        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-        cursor: pointer;
-    }}
-
-    .glass-icon-item:hover {{
-        background: rgba(255, 255, 255, 0.55);
-        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
-        transform: translate(3px, 3px);
-        border-right: 1px solid rgba(0, 0, 0, 0.05);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        animation: single-shake-animation 0.4s ease-in-out;
-    }}
-
-    .glass-icon-item img {{
-        width: 100%;
-        height: auto;
-        display: block;
-        border-radius: 20px;
-    }}
-    </style>
-
-    <div id="wayne-global-root" style="position: fixed; bottom: 25px; right: 25px; z-index: 999999; display: flex; flex-direction: column; align-items: flex-end; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
-        
-        <div id="wayne-chat-card" style="display: none; width: 360px; height: 440px; background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 24px; box-shadow: 0px 12px 40px rgba(0,0,0,0.15); margin-bottom: 12px; flex-direction: column; overflow: hidden;">
-            <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; font-size: 0.95rem; letter-spacing: 0.3px;">🔮 Wayne-AI Workspace</span>
-            </div>
-            <div id="chat-feed-scroller" style="flex: 1; padding: 16px; overflow-y: auto; background: #fafafa; display: flex; flex-direction: column;">
-                {chat_bubbles_html}
-            </div>
-            <div style="padding: 10px 14px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
-                <input id="chat-input-field" type="text" placeholder="Type your project question here..." style="flex: 1; padding: 10px 14px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.85rem;" />
-                <button id="chat-send-btn" style="background: #3b82f6; color: white; border: none; padding: 0 16px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Send</button>
-            </div>
-        </div>
-
-        <button id="wayne-trigger-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 24px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 8px 25px rgba(59, 130, 246, 0.35); display: flex; align-items: center; gap: 8px; outline: none;">
-            <span>💬</span> Ask Wayne-AI
-        </button>
-    </div>
-
-    <script>
-        setTimeout(() => {{
-            const pill = document.getElementById('wayne-trigger-pill');
-            const card = document.getElementById('wayne-chat-card');
-            const scroller = document.getElementById('chat-feed-scroller');
-            const btn = document.getElementById('chat-send-btn');
-            const input = document.getElementById('chat-input-field');
-
-            if (scroller) {{
-                scroller.scrollTop = scroller.scrollHeight;
-            }}
-
-            // Seamless URL Parameter Communication Pipeline
-            function sendPayload() {{
-                const text = input.value.trim();
-                if(!text) return;
-                
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.set("msg", text);
-                window.location.href = currentUrl.toString();
-            }}
-
-            btn.addEventListener('click', sendPayload);
-            input.addEventListener('keydown', (e) => {{
-                if(e.key === 'Enter') sendPayload();
-            }});
-
-            // Manage display toggle positions locally 
-            pill.addEventListener('click', () => {{
-                if(card.style.display === 'none') {{
-                    card.style.display = 'flex';
-                    scroller.scrollTop = scroller.scrollHeight;
-                }} else {{
-                    card.style.display = 'none';
-                }}
-            }});
-        }}, 100);
-    </script>
-""", unsafe_allow_html=True)
 
 
 # ---------- MAIN DASHBOARD LAYOUT GRID ----------
@@ -285,3 +134,55 @@ with container:
         <p>For the best results, ensure your input data follows the sample format exactly.</p>
         </div>
         """, unsafe_allow_html=True)
+
+
+# ---------- GLOBAL APPLICATION DESIGN INJECTIONS ----------
+st.markdown("""
+    <style>
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    /* Single Shake Hover Animation */
+    @keyframes single-shake-animation {
+        0% { transform: translate(0px, 0px) rotate(0deg); }
+        15% { transform: translate(-2px, 1px) rotate(-1deg); }
+        30% { transform: translate(2px, -1px) rotate(1deg); }
+        45% { transform: translate(-2px, -1px) rotate(-1deg); }
+        60% { transform: translate(2px, 1px) rotate(1deg); }
+        75% { transform: translate(-1px, 0px) rotate(0deg); }
+        100% { transform: translate(0px, 0px) rotate(0deg); }
+    }
+
+    .shaky-item:hover {
+        display: block;
+        animation: single-shake-animation 0.4s ease-in-out;
+        animation-iteration-count: 1;
+        cursor: pointer;
+    }
+
+    .glass-icon-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
+        margin-top: 15px;
+        margin-bottom: 25px;
+    }
+
+    .glass-icon-item {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+        border-radius: 24px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.7);
+        border-left: 1px solid rgba(255, 255, 255, 0.7);
+        border-right: 3px solid rgba(0, 0, 0, 0.12);
+        border-bottom: 4px solid rgba(0, 0, 0, 0.18);
+        box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.0
