@@ -139,8 +139,12 @@ with container:
 # ---------- STYLING INJECTIONS & FLOATING VIEWPORT OVERRIDES ----------
 st.markdown("""
     <style>
+    /* CRITICAL ADJUSTMENT: Increased padding-top from 2rem to 4.5rem.
+       This pushes the TxDOT logo and app title down so that the toolbar 
+       elements never overlap or mask them.
+    */
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 4.5rem !important;
         padding-bottom: 2rem !important;
     }
 
@@ -206,7 +210,7 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* Clean containment mapping layout for the custom embedded toolbar controller */
+    /* Keep the overlay iframe completely clear of the viewport layout grid */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
         top: 0px !important;
@@ -216,7 +220,7 @@ st.markdown("""
         z-index: 9999999 !important;
         border: none !important;
         background: transparent !important;
-        pointer-events: none !important; /* Lets user clicks pass straight through to dashboard map items */
+        pointer-events: none !important; 
     }
     </style>
 """, unsafe_allow_html=True)
@@ -263,19 +267,16 @@ st.components.v1.html(f"""
     <script>
         function runDOMInjectionPipeline() {{
             const parentDoc = window.parent.document;
-            
-            // Query for Streamlit's native header trailing layout flexbox container
             const nativeToolbar = parentDoc.querySelector('.stAppToolbar');
             const targetPill = document.getElementById('wayne-toolbar-pill');
             const targetCard = document.getElementById('wayne-chat-card');
             
             if (!nativeToolbar || !targetPill) {{
-                // Retry if components are still processing their initialization cycle
                 setTimeout(runDOMInjectionPipeline, 100);
                 return;
             }}
 
-            // Prepend our interaction button right directly into the top row
+            // Insert our custom button container neatly inside the toolbar flex-row
             nativeToolbar.insertBefore(targetPill, nativeToolbar.firstChild);
             parentDoc.body.appendChild(targetCard);
 
@@ -288,7 +289,6 @@ st.components.v1.html(f"""
                 scroller.scrollTop = scroller.scrollHeight;
             }}
 
-            // Native style matches for clean UI balance
             targetPill.addEventListener('mouseenter', () => {{
                 targetPill.style.background = 'rgba(151, 166, 195, 0.15)';
             }});
@@ -315,7 +315,6 @@ st.components.v1.html(f"""
             targetPill.addEventListener('click', (e) => {{
                 e.stopPropagation();
                 if(targetCard.style.display === 'none' || !targetCard.style.display) {{
-                    // Dynamically lock dropdown placement right beneath our freshly injected header layout position
                     const pillRect = targetPill.getBoundingClientRect();
                     targetCard.style.top = (pillRect.bottom + 6) + 'px';
                     targetCard.style.right = (parentDoc.documentElement.clientWidth - pillRect.right) + 'px';
@@ -332,7 +331,6 @@ st.components.v1.html(f"""
             }});
         }}
 
-        // Kick off the script tracking cycle as soon as iframe mounts
         if (document.readyState === 'complete' || document.readyState === 'interactive') {{
             runDOMInjectionPipeline();
         }} else {{
