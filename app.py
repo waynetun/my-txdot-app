@@ -15,33 +15,68 @@ if "chat_history" not in st.session_state:
 is_chat_mode = st.query_params.get("mode") == "chat"
 
 if is_chat_mode:
-    # --- DEDICATED FULL-SCREEN CHAT INTERACTIVE PAGE ---
+    # --- DEDICATED FULL-SCREEN INTERACTIVE CHAT SURFACE ---
+    
+    # Inject styling to clear out top spacing constraints and style custom text bubbles
     st.markdown("""
         <style>
+        /* Force the core container to utilize full height and give clean breathing room */
         .block-container {
-            padding-top: 2rem !important;
-            max-width: 800px !important;
+            padding-top: 0rem !important;
+            padding-bottom: 5rem !important;
+            max-width: 950px !important;
+        }
+        
+        /* Custom Header Styling */
+        .chat-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 24px;
+            border-radius: 16px;
+            color: white;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #6366f1;
+        }
+
+        /* Message Bubble Overrides */
+        div[data-testid="stChatMessage"] {
+            background-color: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+            margin-bottom: 12px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        
+        /* Target the User Message specific styling background */
+        div[data-testid="stChatMessageVisibilityuser"] {
+            background-color: #f0fdf4 !important;
+            border: 1px solid #bbf7d0 !important;
         }
         </style>
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-            <span style="font-size: 2.2rem;">👤</span>
-            <h1 style="margin: 0; font-size: 2.2rem; font-weight: bold; color: #2b3e50;">Wayne-AI Workspace</h1>
+        
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <span style="font-size: 2.5rem; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));">👤</span>
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; line-height: 1.1;">Wayne-AI Workspace</h1>
+                    <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.95rem;"> TxDOT Proactive Construction Work Item Identifier (Pro-CWII) Context Engine </p>
+                </div>
+            </div>
         </div>
-        <p style="color: #64748b; margin-top: -10px; margin-bottom: 25px;">
-            Connected to TxDOT Proactive Construction Work Item Identifier (Pro-CWII) Database parameters.
-        </p>
     """, unsafe_allow_html=True)
 
-    # Render History Layout natively
+    # Render History Layout natively with updated UI containers
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
+            st.markdown(f"**{msg['role'].capitalize()}**")
             st.write(msg["content"])
 
-    # Processing Inputs natively and responsively
+    # Processing Inputs natively, cleanly sitting at the base of the page layout boundary
     if user_query := st.chat_input("Ask about TxDOT item parameters..."):
         st.session_state.chat_history.append({"role": "user", "content": user_query})
         
-        # Simple processing reply matching engineering context
         bot_reply = f"Wayne-AI here! I've received your query about: '{user_query}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
         st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
         st.rerun()
@@ -49,7 +84,6 @@ if is_chat_mode:
 else:
     # --- MAIN ENGINE DASHBOARD (NORMAL MODE) ---
     
-    # Helper function to safely convert local image files into base64 HTML strings
     def get_image_base64(path):
         if os.path.exists(path):
             with open(path, "rb") as image_file:
@@ -241,14 +275,14 @@ else:
             align-items: center;
             justify-content: center;
             gap: 10px;
-            background: #6366f1;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             color: white !important;
-            padding: 14px 24px;
+            padding: 14px 26px;
             font-weight: 600;
             font-size: 0.95rem;
             text-decoration: none !important;
             border-radius: 50px;
-            box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4);
+            box-shadow: 0px 8px 20px rgba(99, 102, 241, 0.35);
             transition: all 0.2s ease-in-out;
             z-index: 999999;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -257,8 +291,7 @@ else:
 
         #dynamic-wayne-tab-trigger:hover {
             transform: translateY(-3px);
-            background: #4f46e5;
-            box-shadow: 0px 6px 20px rgba(99, 102, 241, 0.6);
+            box-shadow: 0px 12px 24px rgba(99, 102, 241, 0.5);
         }
         </style>
 
@@ -268,15 +301,15 @@ else:
         </a>
     """, unsafe_allow_html=True)
 
-    # Invisible anchor controller to map the active local port address automatically
+    # Invisible anchor controller to map the active deployment address dynamically
     st.components.v1.html("""
         <script>
         function patchLocalNavigationTarget() {
             const linkElement = window.parent.document.getElementById('dynamic-wayne-tab-trigger');
             if (linkElement) {
-                // Read whatever port address your local app is currently using dynamically
-                const originUrl = window.parent.location.origin;
-                linkElement.setAttribute('href', originUrl + '/?mode=chat');
+                const currentUrl = new URL(window.parent.location.href);
+                // Clear any leftover paths or parameters to ensure clean context routing
+                linkElement.setAttribute('href', currentUrl.origin + currentUrl.pathname + '?mode=chat');
             } else {
                 setTimeout(patchLocalNavigationTarget, 100);
             }
