@@ -2,7 +2,18 @@ import streamlit as st
 import base64
 import os
 
+# 1. Set page configuration first
 st.set_page_config(layout="wide")
+
+# 2. IMMEDIATE CRASH FIX: Initialize state vectors before ANY execution logic runs
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = [
+        {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
+    ]
+
+if "chat_is_open" not in st.session_state:
+    st.session_state.chat_is_open = "false"
+
 
 # Helper function to safely convert local image files into base64 HTML strings
 def get_image_base64(path):
@@ -19,10 +30,11 @@ similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
 missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
 verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
-# ---------- GLOBAL CSS STYLE OVERRIDES ----------
+
+# ---------- GLOBAL CSS LAYOUT OVERRIDES ----------
 st.markdown("""
     <style>
-    /* Clean up page padding */
+    /* Clean up page margins */
     .block-container {
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
@@ -91,9 +103,10 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* ---------- TARGET TARGETED CONTAINER ELEMENT ONLY ---------- 
-       Using an attribute wrapper ensures we ONLY float Wayne-AI while leaving
-       your normal content columns and glass cards perfectly pristine!
+    /* ---------- REMOVE THE RESERVED GAP & FLOAT CONTAINER ---------- 
+       This specifically targets the vertical block containing our designated 
+       anchor ID, changing its position context to fixed so it takes up zero 
+       layout height space in the text flow.
     */
     div[data-testid="stVerticalBlockBorderWrapper"]:has(div#fixed-wayne-container) {
         position: fixed !important;
@@ -117,14 +130,6 @@ st.markdown("""
 
 
 # ---------- CHAT SYNCHRONIZATION BACKEND PIPELINE ----------
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = [
-        {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
-    ]
-
-if "chat_is_open" not in st.session_state:
-    st.session_state.chat_is_open = "false"
-
 incoming_message = st.query_params.get("msg", "")
 updated_panel_state = st.query_params.get("panel_state", "")
 
@@ -255,10 +260,9 @@ with container:
 # -------------------------------------------------------------------------
 # ---------- SECURE SEPARATE ISOLATED FLOATING CONTAINER ----------
 # -------------------------------------------------------------------------
-# Placed down here so it has absolutely zero structural footprint on your grids
 ai_layer = st.container()
 with ai_layer:
-    # Anchor tag that allows CSS to uniquely identify this exact block
+    # Anchor tag that allows CSS to uniquely target and float this vertical block context
     st.markdown('<div id="fixed-wayne-container"></div>', unsafe_allow_html=True)
     
     st.components.v1.html(f"""
@@ -338,5 +342,3 @@ with ai_layer:
             inputField.addEventListener('keydown', (e) => {{
                 if(e.key === 'Enter') submitMessage();
             }});
-        </script>
-    """, height=540)
