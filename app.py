@@ -206,17 +206,23 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* CRITICAL UPDATE: Anchors the HTML component iframe directly into the 
-       screen view space right beside the "Manage app" controller framework.
+    /* Make room in the top toolbar row so things don't overlap */
+    .stAppToolbar {
+        padding-right: 15px !important;
+        gap: 12px !important;
+    }
+
+    /* CRITICAL UPDATE: Anchors the iframe container right at the top layout bar 
+       level next to the native toolbar options.
     */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
-        bottom: 0px !important;
-        right: 160px !important;   /* Shifts it leftward to sit perfectly parallel with 'Manage app' */
-        width: 330px !important;
-        height: 520px !important;  /* Allotted bounding volume height to contain open chat views */
+        top: 6px !important;
+        right: 165px !important;   /* Aligns right before Share, Edit, and the 3-dot menu */
+        width: 350px !important;
+        height: 550px !important;  
         overflow: visible !important;
-        z-index: 9999991 !important;
+        z-index: 9999999 !important;
         border: none !important;
         background: transparent !important;
     }
@@ -238,14 +244,20 @@ for msg in st.session_state.chat_history:
     """
 
 
-# ---------- PERSISTENT FLOATING COPTILOT WIDGET INJECTOR ----------
+# ---------- PERSISTENT TOP-ROW COPTILOT WIDGET INJECTOR ----------
 st.components.v1.html(f"""
-    <div id="wayne-global-root" style="position: fixed; bottom: 0px; left: 0px; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; font-family: Arial, sans-serif; pointer-events: none;">
+    <div id="wayne-global-root" style="position: fixed; top: 0px; right: 0px; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-end; font-family: Arial, sans-serif; pointer-events: none;">
         
-        <div id="wayne-chat-card" style="display: none; width: 320px; height: 450px; background: white; border-left: 1px solid #c8d3df; border-top: 1px solid #c8d3df; box-shadow: -4px -4px 20px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; pointer-events: auto;">
+        <div id="wayne-trigger-pill" style="background: #ffffff; color: #31333f; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 12px; font-weight: 500; font-size: 0.85rem; cursor: pointer; box-shadow: 0px 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; gap: 6px; width: auto; height: 32px; box-sizing: border-box; pointer-events: auto; user-select: none; transition: background 0.15s, border-color 0.15s;">
+            <span style="font-size: 1rem; line-height: 1;">💬</span>
+            <span>Ask Wayne-AI</span>
+            <span id="pill-arrow-indicator" style="font-size: 0.6rem; color: #737373; margin-left: 2px;">▼</span>
+        </div>
+
+        <div id="wayne-chat-card" style="display: none; width: 320px; height: 450px; background: white; border: 1px solid #c8d3df; border-radius: 12px; box-shadow: 0px 10px 25px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; pointer-events: auto; margin-top: 8px;">
             
             <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.15);">
-                <span style="font-weight: bold; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Support Chat</span>
+                <span style="font-weight: bold; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
             </div>
 
             <div id="chat-feed-scroller" style="flex: 1; padding: 14px; overflow-y: auto; background: #ffffff; display: flex; flex-direction: column; border-bottom: 1px solid #e1e8ed;">
@@ -254,13 +266,8 @@ st.components.v1.html(f"""
 
             <div style="padding: 12px; background: #f4f7f9; display: flex; flex-direction: column; gap: 8px;">
                 <input id="chat-input-field" type="text" placeholder="Type your project question here..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
-                <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; width: 100%; transition: background 0.2s;">Start Chat</button>
+                <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; width: 100%; transition: background 0.2s;">Send Message</button>
             </div>
-        </div>
-
-        <div id="wayne-trigger-pill" style="background: #1f7bb6; color: white; border-top-left-radius: 4px; border-top-right-radius: 4px; padding: 10px 16px; font-weight: bold; font-size: 0.9rem; cursor: pointer; box-shadow: 0px -2px 10px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; width: 120px; height: 38px; box-sizing: border-box; pointer-events: auto; user-select: none;">
-            <span style="display: flex; align-items: center; gap: 6px;">💬 Chat</span>
-            <span id="pill-arrow-indicator" style="font-size: 0.7rem; opacity: 0.85;">➖</span>
         </div>
     </div>
 
@@ -276,6 +283,18 @@ st.components.v1.html(f"""
             if (scroller) {{
                 scroller.scrollTop = scroller.scrollHeight;
             }}
+
+            // Highlight pill on hover to match Streamlit native menu buttons
+            pill.addEventListener('mouseenter', () => {{
+                pill.style.background = '#f8fafc';
+                pill.style.borderColor = '#94a3b8';
+            }});
+            pill.addEventListener('mouseleave', () => {{
+                if(card.style.display === 'none') {{
+                    pill.style.background = '#ffffff';
+                    pill.style.borderColor = '#cbd5e1';
+                }}
+            }});
 
             function sendPayload() {{
                 const text = input.value.trim();
@@ -294,15 +313,17 @@ st.components.v1.html(f"""
             pill.addEventListener('click', () => {{
                 if(card.style.display === 'none') {{
                     card.style.display = 'flex';
-                    pill.style.width = '320px';
-                    arrow.innerHTML = '🗕';
+                    pill.style.background = '#f1f5f9';
+                    pill.style.borderColor = '#64748b';
+                    arrow.innerHTML = '▲';
                     scroller.scrollTop = scroller.scrollHeight;
                 }} else {{
                     card.style.display = 'none';
-                    pill.style.width = '120px';
-                    arrow.innerHTML = '➖';
+                    pill.style.background = '#ffffff';
+                    pill.style.borderColor = '#cbd5e1';
+                    arrow.innerHTML = '▼';
                 }}
             }});
         }}, 50);
     </script>
-""", height=520)
+""", height=550)
