@@ -231,4 +231,112 @@ with floating_box:
     # Anchor Hook that links directly to the viewport-pinning CSS rule above
     st.markdown('<div id="wayne-floating-anchor"></div>', unsafe_allow_html=True)
     
-    # Process messaging
+    # Process messaging logic safely directly through Streamlit's engine
+    # This prevents the app from locking or going non-responsive!
+    chat_input_val = st.text_input("Hidden Sync Input", key="ghost_input_pipe", label_visibility="collapsed")
+    
+    if chat_input_val.strip():
+        # Append User input safely
+        st.session_state.chat_history.append({"role": "user", "content": chat_input_val})
+        # Generate responsive reply from Wayne-AI
+        reply_str = f"Wayne-AI here! I've received your query about: '{chat_input_val}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
+        st.session_state.chat_history.append({"role": "assistant", "content": reply_str})
+        # Wipe structural execution queue states cleanly
+        st.session_state.ghost_input_pipe = ""
+        st.rerun()
+
+    # Build the HTML bubble components safely
+    chat_bubbles_html = ""
+    for msg in st.session_state.chat_history:
+        bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
+        text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
+        align_side = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
+        
+        chat_bubbles_html += f"""
+        <div style="max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
+            <b>{msg['role'].capitalize()}:</b> {msg['content']}
+        </div>
+        """
+
+    # Interactive Iframe Module with flawless bi-directional state logic
+    st.components.v1.html(f"""
+        <div style="position: absolute; bottom: 0; right: 0; width: 360px; display: flex; flex-direction: column; align-items: flex-end; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
+            
+            <div id="chat-window-panel" style="display: {'flex' if st.session_state.chat_is_open else 'none'}; width: 360px; height: 430px; background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 24px; box-shadow: 0px 12px 40px rgba(0,0,0,0.15); margin-bottom: 12px; flex-direction: column; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; font-size: 0.95rem; letter-spacing: 0.3px;">🔮 Wayne-AI Workspace</span>
+                </div>
+                <div id="chat-scroller" style="flex: 1; padding: 16px; overflow-y: auto; background: #fafafa; display: flex; flex-direction: column;">
+                    {chat_bubbles_html}
+                </div>
+                <div style="padding: 10px 14px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+                    <input id="input-box" type="text" placeholder="Type your project question here..." style="flex: 1; padding: 10px 14px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.85rem;" />
+                    <button id="action-send-btn" style="background: #3b82f6; color: white; border: none; padding: 0 16px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Send</button>
+                </div>
+            </div>
+
+            <button id="toggle-trigger-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 24px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 8px 25px rgba(59, 130, 246, 0.35); display: flex; align-items: center; gap: 8px; outline: none;">
+                <span>💬</span> Ask Wayne-AI
+            </button>
+        </div>
+
+        <script>
+            const pill = document.getElementById('toggle-trigger-pill');
+            const scroller = document.getElementById('chat-scroller');
+            const inputBox = document.getElementById('input-box');
+            const sendBtn = document.getElementById('action-send-btn');
+            
+            // Auto scroll conversation feed cleanly to latest items
+            if(scroller) {{
+                scroller.scrollTop = scroller.scrollHeight;
+            }}
+
+            // Intercept messages and pipe them instantly into the layout container
+            function transmitPayload() {{
+                const queryText = inputBox.value.trim();
+                if(!queryText) return;
+                
+                // Grab Streamlit's native backend input wrapper safely
+                const ghostInput = window.parent.document.querySelector('div[data-testid="stVerticalBlockBorderWrapper"] input[type="text"]');
+                if(ghostInput) {{
+                    // Inject string data smoothly
+                    let lastValue = ghostInput.value;
+                    ghostInput.value = queryText;
+                    let event = new Event('input', {{ bubbles: true }});
+                    
+                    // Hack to trick react rendering components into updating state values instantly
+                    let tracker = ghostInput._valueTracker;
+                    if (tracker) {{
+                        tracker.setValue(lastValue);
+                    }}
+                    
+                    ghostInput.dispatchEvent(event);
+                    
+                    // Dispatch return key submission sequence
+                    setTimeout(() => {{
+                        const enterEvent = new KeyboardEvent('keydown', {{
+                            bubbles: true, cancelable: true, key: 'Enter', code: 'Enter', keyCode: 13
+                        }});
+                        ghostInput.dispatchEvent(enterEvent);
+                    }}, 50);
+                }}
+            }}
+
+            // Interactive Event Listeners
+            sendBtn.addEventListener('click', transmitPayload);
+            inputBox.addEventListener('keydown', (e) => {{
+                if(e.key === 'Enter') transmitPayload();
+            }});
+
+            // Toggle Panel Visibility State values locally seamlessly
+            pill.addEventListener('click', () => {{
+                const win = document.getElementById('chat-window-panel');
+                if(win.style.display === 'none') {{
+                    win.style.display = 'flex';
+                    scroller.scrollTop = scroller.scrollHeight;
+                }} else {{
+                    win.style.display = 'none';
+                }}
+            }});
+        </script>
+    """, height=500)
