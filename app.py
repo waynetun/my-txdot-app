@@ -91,78 +91,10 @@ st.markdown("""
         display: block;
         border-radius: 20px;
     }
-
-    /* ---------- PRECISE WINDOW-EDGE FLOATING ANCHOR SYSTEM ---------- */
-    /* Target container block to position it independently of page content heights */
-    div.wayne-floating-anchor {
-        position: fixed !important;
-        bottom: 30px !important;
-        right: 30px !important;
-        z-index: 999999 !important;
-        width: auto !important;
-        height: auto !important;
-    }
-
-    /* Force the built-in checkbox/toggle button container structure to style as a premium pill button */
-    div.wayne-floating-anchor div[data-testid="stCheckbox"] {
-        background: transparent !important;
-    }
-
-    div.wayne-floating-anchor div[data-testid="stCheckbox"] label {
-        background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) !important;
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 50px !important;
-        padding: 12px 26px !important;
-        font-weight: 600 !important;
-        font-size: 0.95rem !important;
-        letter-spacing: 0.4px !important;
-        box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.45) !important;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        height: 52px !important;
-    }
-
-    /* Hover interactions mirroring a high-fidelity desktop UI layout */
-    div.wayne-floating-anchor div[data-testid="stCheckbox"]:hover label {
-        transform: translateY(-4px) !important;
-        box-shadow: 0px 14px 35px rgba(168, 85, 247, 0.65) !important;
-        border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    }
-
-    /* Hide the ugly native input square box completely */
-    div.wayne-floating-anchor div[data-testid="stCheckbox"] input {
-        display: none !important;
-    }
     
-    /* Remove text shift alignment margin artifacts from checkmarks */
-    div.wayne-floating-anchor div[data-testid="stCheckbox"] div[data-testid="stMarkdownContainer"] p {
-        color: white !important;
-        margin: 0 !important;
-        font-weight: 600 !important;
-    }
-
-    /* ---------- SAME-SCREEN IMMERSIVE CHAT WINDOW CARD ---------- */
-    div.wayne-chat-window-box {
-        position: fixed !important;
-        bottom: 95px !important; /* Suspended elegantly right on top of our pill trigger */
-        right: 30px !important;
-        width: 380px !important;
-        height: 520px !important;
-        border-radius: 24px !important;
-        border: 1px solid rgba(255, 255, 255, 0.22) !important;
-        background: rgba(255, 255, 255, 0.96) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.22) !important;
-        z-index: 999998 !important;
-        padding: 18px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
+    /* Hide the default utility elements of hidden toggle button elements securely */
+    div.hidden-trigger-btn button {
+        display: none !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -196,14 +128,15 @@ with container:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---------- 3D GLASSMORPHIC NAVIGATION ROW ----------
+        # This structure uses the pre-rendered inline base64 string map data to clear broken image boxes permanently
         st.markdown(f"""
             <div class="glass-icon-container">
-                <div class="glass-icon-item"><img src="{home_b64}"></div>
-                <div class="glass-icon-item"><img src="{help_b64}"></div>
-                <div class="glass-icon-item"><img src="{sample_b64}"></div>
-                <div class="glass-icon-item"><img src="{similar_b64}"></div>
-                <div class="glass-icon-item"><img src="{missing_b64}"></div>
-                <div class="glass-icon-item"><img src="{verify_b64}"></div>
+                <div class="glass-icon-item"><img src="{home_b64 if home_b64 else 'https://img.icons8.com/fluency/96/home.png'}"></div>
+                <div class="glass-icon-item"><img src="{help_b64 if help_b64 else 'https://img.icons8.com/fluency/96/help.png'}"></div>
+                <div class="glass-icon-item"><img src="{sample_b64 if sample_b64 else 'https://img.icons8.com/fluency/96/test-partial-passed.png'}"></div>
+                <div class="glass-icon-item"><img src="{similar_b64 if similar_b64 else 'https://img.icons8.com/fluency/96/layers.png'}"></div>
+                <div class="glass-icon-item"><img src="{missing_b64 if missing_b64 else 'https://img.icons8.com/fluency/96/delete-property.png'}"></div>
+                <div class="glass-icon-item"><img src="{verify_b64 if verify_b64 else 'https://img.icons8.com/fluency/96/checked-checkbox.png'}"></div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -272,30 +205,110 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# ---------- IMMERSIVE OVERLAY CHAT TRIGGER LOGIC ----------
-# An isolated anchor block containing our custom styled trigger
-st.markdown('<div class="wayne-floating-anchor">', unsafe_allow_html=True)
-is_open = st.checkbox("💬 Ask Wayne-AI", value=False, key="wayne_chat_toggle")
+# -------------------------------------------------------------------------
+# ---------- TRUE FLOATING FIXED INJECTED COGNITIVE ASSISTANT ROW ----------
+# -------------------------------------------------------------------------
+# We capture data back and forth to streamline chat update reruns seamlessly
+if "last_msg" not in st.session_state:
+    st.session_state.last_msg = ""
+
+# Hidden button setup used as a processing target bridge from the JavaScript interface layer
+st.markdown('<div class="hidden-trigger-btn">', unsafe_allow_html=True)
+sync_clicked = st.button("SyncData", key="sync_button_key")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# When active, render the dedicated window card anchored to screen coordinates seamlessly
-if is_open:
-    st.markdown('<div class="wayne-chat-window-box">', unsafe_allow_html=True)
-    st.markdown("<h3 style='margin-top:0; color:#1e1e24;'>🔮 Wayne-AI Workspace</h3>", unsafe_allow_html=True)
+# Parse processing queue items cleanly
+incoming_message = st.query_params.get("msg", "")
+if incoming_message and incoming_message != st.session_state.last_msg:
+    st.session_state.last_msg = incoming_message
+    st.session_state.chat_history.append({"role": "user", "content": incoming_message})
     
-    # Inner scrollable message layer
-    chat_scroll_area = st.container(height=380)
-    user_input = st.chat_input("Type your project question here...", key="wayne_input_field")
-    
-    if user_input:
-        st.session_state.chat_history.append({"role": "user", "content": user_input})
-        copilot_reply = f"Wayne-AI here! I've received your query about: '{user_input}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
-        st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
-        st.rerun()
+    # Process custom responses
+    copilot_reply = f"Wayne-AI here! I've received your query about: '{incoming_message}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
+    st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
+    st.query_params["msg"] = "" # Clear temporary query flags safely
+    st.rerun()
 
-    with chat_scroll_area:
-        for message in st.session_state.chat_history:
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
-                
-    st.markdown('</div>', unsafe_allow_html=True)
+# Build HTML conversation stream directly to bypass structural iframe clipping
+chat_bubbles_html = ""
+for msg in st.session_state.chat_history:
+    align = "right" if msg["role"] == "user" else "left"
+    bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
+    text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
+    margin = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
+    
+    chat_bubbles_html += f"""
+    <div style='max-width: 80%; padding: 10px 14px; border-radius: 16px; margin-bottom: 10px; font-size: 0.9rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {margin}'>
+        <b>{msg['role'].capitalize()}:</b> {msg['content']}
+    </div>
+    """
+
+# Injecting the absolute screen-fixed raw HTML and JS controller layer
+st.components.v1.html(f"""
+    <div id="wayne-floating-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999999; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
+        
+        <div id="wayne-chat-card" style="display: none; width: 360px; height: 480px; background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.08); border-radius: 24px; box-shadow: 0px 20px 45px rgba(0,0,0,0.15); margin-bottom: 15px; flex-direction: column; overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+            <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 16px; color: white; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 1rem; letter-spacing: 0.3px;">🔮 Wayne-AI Workspace</span>
+                <span id="close-chat-pane" style="cursor: pointer; font-size: 1.2rem; opacity: 0.8; font-weight: bold; padding: 2px 6px;">×</span>
+            </div>
+            
+            <div style="flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column;" id="chat-scroller-node">
+                {chat_bubbles_html}
+            </div>
+            
+            <div style="padding: 12px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 8px; background: white;">
+                <input id="chat-input-box" type="text" placeholder="Type your project question here..." style="flex: 1; padding: 10px 14px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.9rem;" />
+                <button id="send-chat-payload" style="background: #3b82f6; color: white; border: none; padding: 0 16px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Send</button>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+            <button id="wayne-floating-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); color: white; border: none; border-radius: 50px; padding: 14px 26px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0px 10px 30px rgba(168, 85, 247, 0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.2s ease;">
+                <span>💬</span> Ask Wayne-AI
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const pillBtn = document.getElementById('wayne-floating-pill');
+        const chatCard = document.getElementById('wayne-chat-card');
+        const closeBtn = document.getElementById('close-chat-pane');
+        const sendBtn = document.getElementById('send-chat-payload');
+        const inputField = document.getElementById('chat-input-box');
+        const scroller = document.getElementById('chat-scroller-node');
+
+        // Scroll messages viewport to base index automatically
+        scroller.scrollTop = scroller.scrollHeight;
+
+        // Toggle visibility state dynamically
+        pillBtn.addEventListener('click', () => {{
+            if (chatCard.style.display === 'none' || chatCard.style.display === '') {{
+                chatCard.style.display = 'flex';
+                scroller.scrollTop = scroller.scrollHeight;
+            }} else {{
+                chatCard.style.display = 'none';
+            }}
+        }});
+
+        closeBtn.addEventListener('click', () => {{
+            chatCard.style.display = 'none';
+        }});
+
+        // Dispatch data updates back up to the Streamlit processing engine
+        function submitMessage() {{
+            const txt = inputField.value.trim();
+            if(!txt) return;
+            
+            // Inject text value as query parameter and fire sync click
+            const url = new URL(window.parent.location.href);
+            url.searchParams.set("msg", txt);
+            window.parent.location.href = url.toString();
+        }}
+
+        sendBtn.addEventListener('click', submitMessage);
+        inputField.addEventListener('keydown', (e) => {{
+            if(e.key === 'Enter') submitMessage();
+        }});
+    </script>
+""", height=550)
