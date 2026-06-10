@@ -1,4 +1,2 @@
-import streamlit as st
-
-# Use the nickname you defined in the Secrets vault
-api_key = st.secrets["GEMINI_API_KEY"]
+pypdf
+google-generativeai
