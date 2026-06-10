@@ -206,17 +206,17 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* Keep background execution layer transparent and pass clicks safely */
+    /* CRITICAL FIX: Allow clicks to pass straight through the invisible components container */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
-        top: 0px !important;
-        right: 0px !important;
-        width: 100vw !important;
-        height: 100vh !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 380px !important;
+        height: 560px !important;
         z-index: 9999999 !important;
         border: none !important;
         background: transparent !important;
-        pointer-events: none !important; 
+        pointer-events: none !important; /* Passes clicks downward to your page */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -238,16 +238,16 @@ for msg in st.session_state.chat_history:
 
 # ---------- PERSISTENT INJECTED COPTILOT WIDGET ----------
 st.components.v1.html(f"""
-    <div id="wayne-toolbar-pill" style="pointer-events: auto !important; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: #31333f; padding: 4px 10px; font-weight: 400; font-size: 0.875rem; cursor: pointer; border-radius: 8px; border: 1px solid transparent; height: 36px; box-sizing: border-box; user-select: none; transition: background 0.1s; margin-right: 4px; z-index: 999999999;">
-        <span style="font-size: 1.05rem; display: flex; align-items: center; pointer-events: none;">💬</span>
-        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; pointer-events: none;">Ask Wayne-AI</span>
-        <span id="pill-arrow-indicator" style="font-size: 0.55rem; color: #737373; margin-left: 2px; pointer-events: none;">▼</span>
+    <div id="wayne-floating-pill" style="pointer-events: auto !important; position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #6366f1; color: white; padding: 12px 22px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 50px; box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4); user-select: none; transition: all 0.2s ease-in-out; z-index: 99999999;">
+        <span style="font-size: 1.1rem; display: flex; align-items: center;">💬</span>
+        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Ask Wayne-AI</span>
     </div>
 
-    <div id="wayne-chat-card" style="pointer-events: auto !important; display: none; position: fixed; top: 50px; right: 20px; width: 340px; height: 480px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0px 8px 32px rgba(0,0,0,0.16); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 10000000;">
+    <div id="wayne-chat-card" style="pointer-events: auto !important; display: none; position: fixed; bottom: 85px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid #cbd5e1; border-radius: 16px; box-shadow: 0px 8px 32px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 99999999;">
         
-        <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
+        <div style="background: #2b3e50; padding: 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
+            <span id="close-chat-card" style="cursor: pointer; font-size: 1.1rem; opacity: 0.8; font-weight: bold;">&times;</span>
         </div>
 
         <div id="chat-feed-scroller" style="flex: 1; padding: 14px; overflow-y: auto; background: #ffffff; display: flex; flex-direction: column; border-bottom: 1px solid #e2e8f0;">
@@ -255,54 +255,42 @@ st.components.v1.html(f"""
         </div>
 
         <div style="padding: 12px; background: #f8fafc; display: flex; flex-direction: column; gap: 8px;">
-            <input id="chat-input-field" type="text" placeholder="Ask about TxDOT item parameters..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
-            <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; width: 100%; transition: background 0.15s;">Send Query</button>
+            <input id="chat-input-field" type="text" placeholder="Ask about TxDOT item parameters..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
+            <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; width: 100%; transition: background 0.15s;">Send Query</button>
         </div>
     </div>
 
     <script>
-        function runDOMInjectionPipeline() {{
+        function initializeFloatingChat() {{
             const parentDoc = window.parent.document;
-            const nativeToolbar = parentDoc.querySelector('.stAppToolbar');
-            const targetPill = document.getElementById('wayne-toolbar-pill');
+            const targetPill = document.getElementById('wayne-floating-pill');
             const targetCard = document.getElementById('wayne-chat-card');
+            const closeBtn = document.getElementById('close-chat-card');
             
-            if (!nativeToolbar || !targetPill) {{
-                setTimeout(runDOMInjectionPipeline, 100);
-                return;
-            }}
-
-            // Prepend our custom button container neatly inside the toolbar flex-row
-            nativeToolbar.insertBefore(targetPill, nativeToolbar.firstChild);
+            // Append elements straight to the top level body to keep them active
+            parentDoc.body.appendChild(targetPill);
             parentDoc.body.appendChild(targetCard);
 
-            // CRITICAL FIX: Ensure the parent container elements created by Streamlit 
-            // do not block mouse interaction events from executing.
-            if(nativeToolbar.parentElement) {{
-                nativeToolbar.parentElement.style.pointerEvents = 'auto';
-            }}
-            nativeToolbar.style.pointerEvents = 'auto';
-
             const scroller = document.getElementById('chat-feed-scroller');
-            const btn = document.getElementById('chat-send-btn');
-            const input = document.getElementById('chat-input-field');
-            const arrow = document.getElementById('pill-arrow-indicator');
+            const sendBtn = document.getElementById('chat-send-btn');
+            const inputField = document.getElementById('chat-input-field');
 
             if (scroller) {{
                 scroller.scrollTop = scroller.scrollHeight;
             }}
 
+            // Add Hover Animations
             targetPill.addEventListener('mouseenter', () => {{
-                targetPill.style.background = 'rgba(151, 166, 195, 0.15)';
+                targetPill.style.transform = 'translateY(-2px)';
+                targetPill.style.boxShadow = '0px 6px 20px rgba(99, 102, 241, 0.5)';
             }});
             targetPill.addEventListener('mouseleave', () => {{
-                if (targetCard.style.display !== 'flex') {{
-                    targetPill.style.background = 'transparent';
-                }}
+                targetPill.style.transform = 'translateY(0px)';
+                targetPill.style.boxShadow = '0px 4px 16px rgba(99, 102, 241, 0.4)';
             }});
 
             function sendPayload() {{
-                const text = input.value.trim();
+                const text = inputField.value.trim();
                 if(!text) return;
                 
                 const currentUrl = new URL(window.parent.location.href);
@@ -310,27 +298,32 @@ st.components.v1.html(f"""
                 window.parent.location.href = currentUrl.toString();
             }}
 
-            btn.addEventListener('click', sendPayload);
-            input.addEventListener('keydown', (e) => {{
+            sendBtn.addEventListener('click', sendPayload);
+            inputField.addEventListener('keydown', (e) => {{
                 if(e.key === 'Enter') sendPayload();
             }});
 
+            // Toggle Open/Close functionality on click
             targetPill.addEventListener('click', (e) => {{
                 e.preventDefault();
                 e.stopPropagation();
                 if(targetCard.style.display === 'none' || !targetCard.style.display) {{
-                    const pillRect = targetPill.getBoundingClientRect();
-                    targetCard.style.top = (pillRect.bottom + 6) + 'px';
-                    targetCard.style.right = (parentDoc.documentElement.clientWidth - pillRect.right) + 'px';
-                    
                     targetCard.style.display = 'flex';
-                    targetPill.style.background = 'rgba(151, 166, 195, 0.25)';
-                    arrow.innerHTML = '▲';
                     if (scroller) scroller.scrollTop = scroller.scrollHeight;
                 }} else {{
                     targetCard.style.display = 'none';
-                    targetPill.style.background = 'transparent';
-                    arrow.innerHTML = '▼';
                 }}
             }});
+
+            closeBtn.addEventListener('click', () => {{
+                targetCard.style.display = 'none';
+            }});
         }}
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {{
+            initializeFloatingChat();
+        }} else {{
+            document.addEventListener('DOMContentLoaded', initializeFloatingChat);
+        }}
+    </script>
+""", height=0)
