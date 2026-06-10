@@ -5,22 +5,6 @@ import os
 # 1. Page Configuration
 st.set_page_config(layout="wide")
 
-# 2. State Initialization Pipeline
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = [
-        {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
-    ]
-
-# ---------- PARSE INCOMING CHAT MESSAGES ----------
-incoming_msg = st.query_params.get("msg", "")
-if incoming_msg:
-    st.session_state.chat_history.append({"role": "user", "content": incoming_msg})
-    reply = f"Wayne-AI here! I've received your query about: '{incoming_msg}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
-    st.session_state.chat_history.append({"role": "assistant", "content": reply})
-    st.query_params["msg"] = ""  
-    st.rerun()
-
-
 # Helper function to safely convert local image files into base64 HTML strings
 def get_image_base64(path):
     if os.path.exists(path):
@@ -136,21 +120,10 @@ with container:
         """, unsafe_allow_html=True)
 
 
-# Parse chat bubble records into rendering structures safely
-chat_bubbles_html = ""
-for msg in st.session_state.chat_history:
-    bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
-    text_color = "#0369a1" if msg["role"] == "user" else "#1f2937"
-    align_side = "margin-left: auto;" if msg["role"] == "user" else "margin-right: auto;"
-    
-    chat_bubbles_html += f"""
-    <div style="max-width: 85%; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.4; background-color: {bg_color}; color: {text_color}; {align_side}">
-        <b>{msg['role'].capitalize()}:</b> {msg['content']}
-    </div>
-    """
+# ---------- CSS STYLING & FLOATING LINK INJECTION ----------
+# Replace 'https://your-copilot-url.com' with the actual link to your chatbot portal
+copilot_portal_url = "https://your-copilot-url.com"
 
-
-# ---------- DIRECT INJECTION: VIEWPORT WIDGET & GLOBAL STYLES ----------
 st.markdown(f"""
     <style>
     .block-container {{
@@ -220,117 +193,37 @@ st.markdown(f"""
         border-radius: 20px;
     }}
 
-    /* HIDE STREAMLIT'S SCRIPT IFRAME SO IT DOES NOT BLOCK CLICKS */
-    iframe[title="st.components.v1.html"] {{
-        position: fixed !important;
-        width: 0px !important;
-        height: 0px !important;
-        border: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
+    /* Floating Pill Button Styling */
+    .floating-wayne-link {{
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #6366f1;
+        color: white !important;
+        padding: 14px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none !important;
+        border-radius: 50px;
+        box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4);
+        transition: all 0.2s ease-in-out;
+        z-index: 999999;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }}
+
+    .floating-wayne-link:hover {{
+        transform: translateY(-3px);
+        background: #4f46e5;
+        box-shadow: 0px 6px 20px rgba(99, 102, 241, 0.6);
     }}
     </style>
 
-    <div id="wayne-floating-pill" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #6366f1; color: white; padding: 12px 22px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 50px; box-shadow: 0px 4px 16px rgba(99, 102, 241, 0.4); user-select: none; transition: all 0.2s ease-in-out; z-index: 999999;">
+    <a href="{copilot_portal_url}" target="_blank" class="floating-wayne-link">
         <span style="font-size: 1.1rem; display: flex; align-items: center;">💬</span>
-        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Ask Wayne-AI</span>
-    </div>
-
-    <div id="wayne-chat-card" style="display: none; position: fixed; bottom: 85px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid #cbd5e1; border-radius: 16px; box-shadow: 0px 8px 32px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 999999;">
-        
-        <div style="background: #2b3e50; padding: 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
-            <span id="close-chat-card" style="cursor: pointer; font-size: 1.1rem; opacity: 0.8; font-weight: bold;">&times;</span>
-        </div>
-
-        <div id="chat-feed-scroller" style="flex: 1; padding: 14px; overflow-y: auto; background: #ffffff; display: flex; flex-direction: column; border-bottom: 1px solid #e2e8f0;">
-            {chat_bubbles_html}
-        </div>
-
-        <div style="padding: 12px; background: #f8fafc; display: flex; flex-direction: column; gap: 8px;">
-            <input id="chat-input-field" type="text" placeholder="Ask about TxDOT item parameters..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
-            <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; width: 100%; transition: background 0.15s;">Send Query</button>
-        </div>
-    </div>
+        <span>Ask Wayne-AI</span>
+    </a>
 """, unsafe_allow_html=True)
-
-
-# ---------- ISOLATED EVENT CONTROLLER ENGINE ----------
-st.components.v1.html("""
-    <script>
-        function initializeFloatingChat() {
-            const parentDoc = window.parent.document;
-            const targetPill = parentDoc.getElementById('wayne-floating-pill');
-            const targetCard = parentDoc.getElementById('wayne-chat-card');
-            const closeBtn = parentDoc.getElementById('close-chat-card');
-            const scroller = parentDoc.getElementById('chat-feed-scroller');
-            const sendBtn = parentDoc.getElementById('chat-send-btn');
-            const inputField = parentDoc.getElementById('chat-input-field');
-
-            if (!targetPill || !targetCard) return;
-
-            if (scroller) {
-                scroller.scrollTop = scroller.scrollHeight;
-            }
-
-            // Button Hover FX
-            targetPill.addEventListener('mouseenter', () => {
-                targetPill.style.transform = 'translateY(-2px)';
-                targetPill.style.boxShadow = '0px 6px 20px rgba(99, 102, 241, 0.5)';
-            });
-            targetPill.addEventListener('mouseleave', () => {
-                targetPill.style.transform = 'translateY(0px)';
-                targetPill.style.boxShadow = '0px 4px 16px rgba(99, 102, 241, 0.4)';
-            });
-
-            function sendPayload() {
-                const text = inputField.value.trim();
-                if(!text) return;
-                
-                const currentUrl = new URL(window.parent.location.href);
-                currentUrl.searchParams.set("msg", text);
-                window.parent.location.href = currentUrl.toString();
-            }
-
-            // Remove any old event listeners before establishing new mappings
-            sendBtn.replaceWith(sendBtn.cloneNode(true));
-            inputField.replaceWith(inputField.cloneNode(true));
-            targetPill.replaceWith(targetPill.cloneNode(true));
-            closeBtn.replaceWith(closeBtn.cloneNode(true));
-
-            const newSendBtn = parentDoc.getElementById('chat-send-btn');
-            const newInputField = parentDoc.getElementById('chat-input-field');
-            const newTargetPill = parentDoc.getElementById('wayne-floating-pill');
-            const newCloseBtn = parentDoc.getElementById('close-chat-card');
-
-            newSendBtn.addEventListener('click', sendPayload);
-            newInputField.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') sendPayload();
-            });
-
-            // Toggle Open/Close functionality on click
-            newTargetPill.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if(targetCard.style.display === 'none' || !targetCard.style.display) {
-                    targetCard.style.display = 'flex';
-                    if (scroller) scroller.scrollTop = scroller.scrollHeight;
-                } else {
-                    targetCard.style.display = 'none';
-                }
-            });
-
-            newCloseBtn.addEventListener('click', () => {
-                targetCard.style.display = 'none';
-            });
-        }
-
-        // Run checking interval to verify DOM elements exist on parent window
-        const attachedInterval = setInterval(() => {
-            if (window.parent.document.getElementById('wayne-floating-pill')) {
-                initializeFloatingChat();
-                clearInterval(attachedInterval);
-            }
-        }, 100);
-    </script>
-""")
