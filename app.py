@@ -30,41 +30,42 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- PURE HTML/CSS 3D GLASS NAVIGATION ROW ---------- */
-    .glass-nav-row {
+    /* ---------- NATIVE FLEXBOX 3D GLASS ICON ROW ---------- */
+    .glass-icon-container {
         display: flex;
         justify-content: space-between;
-        gap: 20px;
+        gap: 16px;
         width: 100%;
-        margin-top: 10px;
+        margin-top: 15px;
+        margin-bottom: 25px;
     }
 
-    .glass-nav-item {
+    .glass-icon-item {
         flex: 1;
-        background: rgba(255, 255, 255, 0.45);
+        background: rgba(255, 255, 255, 0.35);
         backdrop-filter: blur(12px) saturate(140%);
         -webkit-backdrop-filter: blur(12px) saturate(140%);
-        border-radius: 24px; /* Matches your icon's smooth curves */
-        padding: 12px;
+        border-radius: 20px;
+        padding: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         
-        /* Premium 3D Bevel: bright top/left highlights, deep right/bottom borders */
-        border-top: 1px solid rgba(255, 255, 255, 0.7);
-        border-left: 1px solid rgba(255, 255, 255, 0.7);
+        /* 3D Bevel: Highlight on top/left, deep structure on right/bottom */
+        border-top: 1px solid rgba(255, 255, 255, 0.6);
+        border-left: 1px solid rgba(255, 255, 255, 0.6);
         border-right: 3px solid rgba(0, 0, 0, 0.12);
         border-bottom: 4px solid rgba(0, 0, 0, 0.18);
         
-        /* Drop shadow tracking down and to the right corner */
-        box-shadow: 6px 8px 18px rgba(0, 0, 0, 0.08);
+        /* Distinct 3D shadow cast towards the bottom-right corner */
+        box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
         transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
     }
 
-    /* Hover effect: simulates pressing down the 3D button */
-    .glass-nav-item:hover {
-        background: rgba(255, 255, 255, 0.6);
+    /* Hover effect: simulates pressing down the 3D glass shape */
+    .glass-icon-item:hover {
+        background: rgba(255, 255, 255, 0.55);
         box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
         transform: translate(3px, 3px);
         border-right: 1px solid rgba(0, 0, 0, 0.05);
@@ -72,12 +73,11 @@ st.markdown("""
         animation: single-shake-animation 0.4s ease-in-out;
     }
 
-    /* Keep image scaling constrained cleanly inside the glass shell boundaries */
-    .glass-nav-item img {
-        width: 100%;
+    /* Lock image presentation size neatly inside the item boundaries */
+    .glass-icon-item img {
+        max-width: 100%;
         height: auto;
-        display: block;
-        border-radius: 16px;
+        object-fit: contain;
     }
 
     /* ---------- TRUE FLOATING CHAT WIDGET EFFECT ---------- */
@@ -143,20 +143,18 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- FOOLPROOF NAVIGATION ROW WITH 3D GLASSMORPHIC ICONS ----------
-        # Serving the paths directly to native HTML allows us to style the wrapper flawlessly.
+        # ---------- 3D GLASSMORPHIC ROW FOR YOUR ORIGINAL ICON IMAGES ----------
+        # Serving relative paths inside standard HTML tags skips the column bugs entirely
         st.markdown("""
-            <div class="glass-nav-row">
-                <div class="glass-nav-item"><img src="app/static/HomeCopilot.png" onerror="this.src='HomeCopilot.png'"></div>
-                <div class="glass-nav-item"><img src="app/static/HelpCoPilot.png" onerror="this.src='HelpCoPilot.png'"></div>
-                <div class="glass-nav-item"><img src="app/static/SampleCopilot.png" onerror="this.src='SampleCopilot.png'"></div>
-                <div class="glass-nav-item"><img src="app/static/FindSimilarProjectCoPilot.png" onerror="this.src='FindSimilarProjectCoPilot.png'"></div>
-                <div class="glass-nav-item"><img src="app/static/IdentifyMissingItemsCopilot.png" onerror="this.src='IdentifyMissingItemsCopilot.png'"></div>
-                <div class="glass-nav-item"><img src="app/static/VerifyMajorQuantitiesCoPilot.png" onerror="this.src='VerifyMajorQuantitiesCoPilot.png'"></div>
+            <div class="glass-icon-container">
+                <div class="glass-icon-item"><img src="app/static/HomeCopilot.png" onerror="this.src='HomeCopilot.png'"></div>
+                <div class="glass-icon-item"><img src="app/static/HelpCoPilot.png" onerror="this.src='HelpCoPilot.png'"></div>
+                <div class="glass-icon-item"><img src="app/static/SampleCopilot.png" onerror="this.src='SampleCopilot.png'"></div>
+                <div class="glass-icon-item"><img src="app/static/FindSimilarProjectCoPilot.png" onerror="this.src='FindSimilarProjectCoPilot.png'"></div>
+                <div class="glass-icon-item"><img src="app/static/IdentifyMissingItemsCopilot.png" onerror="this.src='IdentifyMissingItemsCopilot.png'"></div>
+                <div class="glass-icon-item"><img src="app/static/VerifyMajorQuantitiesCoPilot.png" onerror="this.src='VerifyMajorQuantitiesCoPilot.png'"></div>
             </div>
         """, unsafe_allow_html=True)
-
-        st.markdown("<br><br>", unsafe_allow_html=True)
 
         # ---------- WELCOME SECTION ----------
         st.markdown("""
