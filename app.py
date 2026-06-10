@@ -3,20 +3,23 @@ import os
 from pypdf import PdfReader
 import google.generativeai as genai
 
+# 1. PAGE SETUP (Keep your existing design settings here)
 st.set_page_config(layout="wide")
+st.title("TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)")
 
-# 1. ROBUST SETUP
-if "GOOGLE_API_KEY" not in st.secrets:
-    st.error("Missing GOOGLE_API_KEY in Streamlit Secrets!")
+# 2. SETUP: Securely connect to Google Gemini
+if "GOOGLE_API_KEY" in st.secrets:
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    model = genai.GenerativeModel('gemini-1.5-flash')
+else:
+    st.error("Please set your GOOGLE_API_KEY in the Streamlit Cloud Secrets settings.")
     st.stop()
 
-genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-# Using gemini-1.5-flash as it is fast and handles context well
-model = genai.GenerativeModel('gemini-1.5-flash')
-
+# 3. DATA: PDF Reading Engine (The "Brain")
 @st.cache_data
 def get_pdf_knowledge():
     full_text = ""
+    # Scans the current folder for any PDF files
     for file in os.listdir("."):
         if file.endswith(".pdf"):
             try:
@@ -25,37 +28,37 @@ def get_pdf_knowledge():
                     text = page.extract_text()
                     if text: full_text += text + "\n"
             except Exception: continue
-    # Safeguard: Send only the first 20,000 characters to avoid InvalidArgument (too long)
+    # Return a snippet to avoid exceeding token limits
     return full_text[:20000] 
 
-# Load the knowledge
-try:
-    knowledge = get_pdf_knowledge()
-except Exception as e:
-    st.error(f"Error reading PDFs: {e}")
-    knowledge = ""
+# Load the knowledge base once
+knowledge = get_pdf_knowledge()
 
-st.title("Wayne-AI: TxDOT Engineering Engine")
-
-# Chat UI
+# 4. CHAT INTERFACE
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Display previous chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Ask about your TxDOT specs..."):
+# User prompt area
+if prompt := st.chat_input("Ask Wayne-AI about your TxDOT specs..."):
+    # Display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Generate AI response
     with st.chat_message("assistant"):
-        try:
-            # Combined context + question
-            full_prompt = f"Context: {knowledge}\n\nQuestion: {prompt}"
-            response = model.generate_content(full_prompt)
-            st.markdown(response.text)
-            st.session_state.messages.append({"role": "assistant", "content": response.text})
-        except Exception as e:
-            st.error(f"AI Engine Error: {e}")
+        with st.spinner("Analyzing TxDOT specs..."):
+            try:
+                # Combine the PDF knowledge with the user's specific question
+                full_prompt = f"Use this TxDOT data: {knowledge}\n\nQuestion: {prompt}"
+                response = model.generate_content(full_prompt)
+                
+                st.markdown(response.text)
+                st.session_state.messages.append({"role": "assistant", "content": response.text})
+            except Exception as e:
+                st.error(f"Error communicating with AI: {e}")
