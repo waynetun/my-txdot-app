@@ -1,6 +1,23 @@
 import streamlit as st
+import base64
+import os
 
 st.set_page_config(layout="wide")
+
+# Helper function to safely convert local image files into base64 HTML strings
+def get_image_base64(path):
+    if os.path.exists(path):
+        with open(path, "rb") as image_file:
+            return f"data:image/png;base64,{base64.b64encode(image_file.read()).decode()}"
+    return ""
+
+# Pre-encode all navigation icons securely
+home_b64 = get_image_base64("HomeCopilot.png")
+help_b64 = get_image_base64("HelpCoPilot.png")
+sample_b64 = get_image_base64("SampleCopilot.png")
+similar_b64 = get_image_base64("FindSimilarProjectCoPilot.png")
+missing_b64 = get_image_base64("IdentifyMissingItemsCopilot.png")
+verify_b64 = get_image_base64("VerifyMajorQuantitiesCoPilot.png")
 
 # Custom CSS targeting layout blocks, text classes, and precise floating coordinates
 st.markdown("""
@@ -30,7 +47,7 @@ st.markdown("""
         cursor: pointer;
     }
 
-    /* ---------- PREMIUM NATIVE GLASSMORPHIC NAV ROW ---------- */
+    /* ---------- PURE FLEXBOX 3D GLASS ICON CONTAINER ---------- */
     .glass-icon-container {
         display: flex;
         justify-content: space-between;
@@ -46,24 +63,24 @@ st.markdown("""
         backdrop-filter: blur(12px) saturate(140%);
         -webkit-backdrop-filter: blur(12px) saturate(140%);
         border-radius: 24px;
-        padding: 4px; /* Tight padding so the glass border perfectly hugs your card shape */
+        padding: 4px; /* Perfectly hugs your image margins */
         display: flex;
         align-items: center;
         justify-content: center;
         
-        /* Premium 3D Bevel: top/left highlights, deep right/bottom structure */
+        /* 3D Bevel Edge: Vivid top/left highlights, deep right/bottom structural tracking */
         border-top: 1px solid rgba(255, 255, 255, 0.7);
         border-left: 1px solid rgba(255, 255, 255, 0.7);
         border-right: 3px solid rgba(0, 0, 0, 0.12);
         border-bottom: 4px solid rgba(0, 0, 0, 0.18);
         
-        /* 3D drop shadow cast towards the bottom-right corner */
+        /* Premium 3D drop shadow projecting right and down */
         box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
         transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
     }
 
-    /* Hover effect: simulates pressing down the 3D glass card */
+    /* Hover press effect: shifts down-right and softens the shadow shadow */
     .glass-icon-item:hover {
         background: rgba(255, 255, 255, 0.55);
         box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
@@ -73,7 +90,7 @@ st.markdown("""
         animation: single-shake-animation 0.4s ease-in-out;
     }
 
-    /* Lock your custom image sizes perfectly inside the glass item boundaries */
+    /* Constrain the embedded base64 graphics perfectly to container roundings */
     .glass-icon-item img {
         width: 100%;
         height: auto;
@@ -132,10 +149,7 @@ with container:
         # ---------- HEADER ----------
         col1, col2 = st.columns([1, 4])
         with col1:
-            try:
-                st.image("txdot-logo-1000x500.png", width=180)
-            except:
-                st.subheader("TxDOT")
+            st.image("txdot-logo-1000x500.png", width=180)
         with col2:
             st.markdown("""
             <div style="display: flex; align-items: center; padding-top: 10px;">
@@ -147,16 +161,16 @@ with container:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ---------- 3D GLASSMORPHIC ROW FOR YOUR ORIGINAL ICON IMAGES ----------
-        # Case-corrected filenames used here ensure they load perfectly on cloud environments
-        st.markdown("""
+        # ---------- FOOLPROOF 3D GLASS NAVIGATION ROW ----------
+        # Dynamic injection via formatted strings strings handles local serving flawlessly
+        st.markdown(f"""
             <div class="glass-icon-container">
-                <div class="glass-icon-item"><img src="HomeCopilot.png"></div>
-                <div class="glass-icon-item"><img src="HelpCoPilot.png"></div>
-                <div class="glass-icon-item"><img src="SampleCopilot.png"></div>
-                <div class="glass-icon-item"><img src="FindSimilarProjectCoPilot.png"></div>
-                <div class="glass-icon-item"><img src="IdentifyMissingItemsCopilot.png"></div>
-                <div class="glass-icon-item"><img src="VerifyMajorQuantitiesCoPilot.png"></div>
+                <div class="glass-icon-item"><img src="{home_b64}"></div>
+                <div class="glass-icon-item"><img src="{help_b64}"></div>
+                <div class="glass-icon-item"><img src="{sample_b64}"></div>
+                <div class="glass-icon-item"><img src="{similar_b64}"></div>
+                <div class="glass-icon-item"><img src="{missing_b64}"></div>
+                <div class="glass-icon-item"><img src="{verify_b64}"></div>
             </div>
         """, unsafe_allow_html=True)
 
