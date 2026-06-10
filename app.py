@@ -25,7 +25,7 @@ st.markdown("""
     /* Clean up top page padding blocks */
     .block-container {
         padding-top: 2rem;
-        padding-bottom: 0rem; /* Kept open for seamless footer flow */
+        padding-bottom: 0rem;
     }
 
     /* Single Shake Hover Animation */
@@ -91,7 +91,6 @@ st.markdown("""
         border-radius: 20px;
     }
     
-    /* Elegant full-bleed page separator styling */
     .footer-divider {
         margin-top: 40px;
         margin-bottom: 20px;
@@ -107,6 +106,10 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
         {"role": "assistant", "content": "Hello! I am Wayne-AI. How can I help you analyze your TxDOT construction project metrics or files today?"}
     ]
+
+# Keep track of whether the popup window is open or closed across refreshes
+if "chat_is_open" not in st.session_state:
+    st.session_state.chat_is_open = "false"
 
 # ---------- MAIN CONTENT DASHBOARD GRID ----------
 left, container, right = st.columns([0.5, 5, 0.5])
@@ -206,23 +209,29 @@ with container:
         </div>
         """, unsafe_allow_html=True)
 
-        # Content Separator before layout footer session
         st.markdown('<hr class="footer-divider">', unsafe_allow_html=True)
 
 
 # -------------------------------------------------------------------------
-# ---------- INTEGRATED CHAT LOGIC SUBSYSTEM ----------
+# ---------- CHAT PROCESSOR & PARAMETER TRACKING ----------
 # -------------------------------------------------------------------------
+# Capture messages sent from inside the HTML frame
 incoming_message = st.query_params.get("msg", "")
+updated_panel_state = st.query_params.get("panel_state", "")
+
+# Save window visibility configuration seamlessly across updates
+if updated_panel_state:
+    st.session_state.chat_is_open = updated_panel_state
+    st.query_params["panel_state"] = ""
 
 if incoming_message:
     st.session_state.chat_history.append({"role": "user", "content": incoming_message})
     copilot_reply = f"Wayne-AI here! I've received your query about: '{incoming_message}'. Let me pull from the TxDOT historical dataset parameters to build an analysis for you."
     st.session_state.chat_history.append({"role": "assistant", "content": copilot_reply})
-    st.query_params["msg"] = ""  # Clean URL parameters safely
+    st.query_params["msg"] = ""  
     st.rerun()
 
-# Dynamic conversation formatting loops
+# Build HTML message string elements dynamically
 chat_bubbles_html = ""
 for msg in st.session_state.chat_history:
     bg_color = "#e1f5fe" if msg["role"] == "user" else "#f3f4f6"
@@ -235,42 +244,89 @@ for msg in st.session_state.chat_history:
     </div>
     """
 
-# ---------- RENDER IMMERSIVE INTEGRATED FOOTER SESSION ----------
+# ---------- POPUP MODAL FOOTER ELEMENT HTML ----------
+# The frame height is raised to 520px so that when it expands, it has plenty of structural room to pop up beautifully.
 st.components.v1.html(f"""
-    <div id="wayne-footer-session" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 20px; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
+    <div id="wayne-footer-container" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 10px; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; position: relative; height: 500px; display: flex; flex-direction: column; justify-content: flex-end;">
         
-        <div style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.08); border-radius: 24px; box-shadow: 0px 10px 30px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column;">
+        <div id="wayne-sliding-window" style="background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(0,0,0,0.1); border-radius: 24px; box-shadow: 0px -10px 30px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); width: 100%;">
             
-            <div style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 16px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
+            <div id="wayne-header-bar" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); padding: 16px 24px; color: white; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 1.2rem;">🔮</span>
                     <span style="font-weight: 600; font-size: 1.05rem; letter-spacing: 0.3px;">Wayne-AI Project Analysis Workspace</span>
                 </div>
-                <span style="font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-weight: 500;">Active Session</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="window-status-pill" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-weight: 500;">Click to Open</span>
+                    <span id="toggle-arrow-indicator" style="font-size: 1rem; font-weight: bold; transition: transform 0.3s ease;">▲</span>
+                </div>
             </div>
             
-            <div style="height: 250px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; background: #fafafa;" id="chat-scroller-node">
-                {chat_bubbles_html}
-            </div>
-            
-            <div style="padding: 14px 20px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 12px; background: white; align-items: center;">
-                <input id="chat-input-box" type="text" placeholder="Ask Wayne-AI about item code modifications, engineering specifications or missing parameters..." style="flex: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.9rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);" />
-                <button id="send-chat-payload" style="background: #3b82f6; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: background 0.2s ease; white-space: nowrap;">Send Analysis Request</button>
+            <div id="wayne-drawer-body" style="display: none; flex-direction: column; background: #ffffff;">
+                <div style="height: 280px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; background: #fafafa; border-bottom: 1px solid rgba(0,0,0,0.04);" id="chat-scroller-node">
+                    {chat_bubbles_html}
+                </div>
+                
+                <div style="padding: 14px 20px; display: flex; gap: 12px; background: white; align-items: center;">
+                    <input id="chat-input-box" type="text" placeholder="Ask Wayne-AI about item codes, quantities or spec details..." style="flex: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #e5e7eb; outline: none; font-size: 0.9rem;" />
+                    <button id="send-chat-payload" style="background: #3b82f6; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.9rem; white-space: nowrap;">Send Request</button>
+                </div>
             </div>
         </div>
         
-        <div style="text-align: center; margin-top: 12px; font-size: 0.75rem; color: #9ca3af;">
+        <div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #9ca3af; width: 100%;">
             © 2026 TxDOT Pro-CWII Assistant Network Engine • Powered by Wayne-AI
         </div>
     </div>
 
     <script>
+        const headerBar = document.getElementById('wayne-header-bar');
+        const slidingWindow = document.getElementById('wayne-sliding-window');
+        const drawerBody = document.getElementById('wayne-drawer-body');
+        const arrowIndicator = document.getElementById('toggle-arrow-indicator');
+        const statusPill = document.getElementById('window-status-pill');
+        
         const sendBtn = document.getElementById('send-chat-payload');
         const inputField = document.getElementById('chat-input-box');
         const scroller = document.getElementById('chat-scroller-node');
 
-        // Pin scroll viewport directly to base entries
-        scroller.scrollTop = scroller.scrollHeight;
+        // Parse state flags sent directly from Streamlit session context memory
+        let isOpen = {st.session_state.chat_is_open};
+
+        function applyWindowState(open, animate = false) {{
+            if (!animate) {{
+                slidingWindow.style.transition = 'none';
+            }} else {{
+                slidingWindow.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            }}
+
+            if (open) {{
+                drawerBody.style.display = 'flex';
+                arrowIndicator.style.transform = 'rotate(180deg)';
+                statusPill.innerText = "Click to Collapse";
+                statusPill.style.background = "rgba(0, 200, 80, 0.25)";
+                scroller.scrollTop = scroller.scrollHeight;
+            }} else {{
+                drawerBody.style.display = 'none';
+                arrowIndicator.style.transform = 'rotate(0deg)';
+                statusPill.innerText = "Click to Expand";
+                statusPill.style.background = "rgba(255,255,255,0.2)";
+            }}
+        }}
+
+        // Run initial configuration state check on initial boot rendering pipelines
+        applyWindowState(isOpen, false);
+
+        // Click handler to slide the window up or down smoothly
+        headerBar.addEventListener('click', () => {{
+            isOpen = !isOpen;
+            applyWindowState(isOpen, true);
+            
+            // Sync window state configuration flags back to the main parent environment
+            const url = new URL(window.parent.location.href);
+            url.searchParams.set("panel_state", isOpen ? "true" : "false");
+            window.parent.history.replaceState({{}}, "", url.toString());
+        }});
 
         function submitMessage() {{
             const txt = inputField.value.trim();
@@ -278,6 +334,7 @@ st.components.v1.html(f"""
             
             const url = new URL(window.parent.location.href);
             url.searchParams.set("msg", txt);
+            url.searchParams.set("panel_state", "true"); // Force window open on rerun
             window.parent.location.href = url.toString();
         }}
 
@@ -286,4 +343,4 @@ st.components.v1.html(f"""
             if(e.key === 'Enter') submitMessage();
         }});
     </script>
-""", height=400)
+""", height=520)
