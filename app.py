@@ -206,25 +206,17 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* Make room in the top toolbar row so things don't overlap */
-    .stAppToolbar {
-        padding-right: 15px !important;
-        gap: 12px !important;
-    }
-
-    /* CRITICAL UPDATE: Anchors the iframe container right at the top layout bar 
-       level next to the native toolbar options.
-    */
+    /* Clean containment mapping layout for the custom embedded toolbar controller */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
-        top: 6px !important;
-        right: 165px !important;   /* Aligns right before Share, Edit, and the 3-dot menu */
-        width: 350px !important;
-        height: 550px !important;  
-        overflow: visible !important;
+        top: 0px !important;
+        right: 0px !important;
+        width: 100vw !important;
+        height: 100vh !important;
         z-index: 9999999 !important;
         border: none !important;
         background: transparent !important;
+        pointer-events: none !important; /* Lets user clicks pass straight through to dashboard map items */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -244,37 +236,49 @@ for msg in st.session_state.chat_history:
     """
 
 
-# ---------- PERSISTENT TOP-ROW COPTILOT WIDGET INJECTOR ----------
+# ---------- PERSISTENT INJECTED COPTILOT WIDGET ----------
 st.components.v1.html(f"""
-    <div id="wayne-global-root" style="position: fixed; top: 0px; right: 0px; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-end; font-family: Arial, sans-serif; pointer-events: none;">
+    <div id="wayne-toolbar-pill" style="pointer-events: auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: #31333f; padding: 4px 10px; font-weight: 400; font-size: 0.875rem; cursor: pointer; border-radius: 8px; border: 1px solid transparent; height: 36px; box-sizing: border-box; user-select: none; transition: background 0.1s; margin-right: 4px;">
+        <span style="font-size: 1.05rem; display: flex; align-items: center;">💬</span>
+        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Ask Wayne-AI</span>
+        <span id="pill-arrow-indicator" style="font-size: 0.55rem; color: #737373; margin-left: 2px;">▼</span>
+    </div>
+
+    <div id="wayne-chat-card" style="pointer-events: auto; display: none; position: fixed; top: 50px; right: 20px; width: 340px; height: 480px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0px 8px 32px rgba(0,0,0,0.16); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 10000000;">
         
-        <div id="wayne-trigger-pill" style="background: #ffffff; color: #31333f; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 12px; font-weight: 500; font-size: 0.85rem; cursor: pointer; box-shadow: 0px 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; gap: 6px; width: auto; height: 32px; box-sizing: border-box; pointer-events: auto; user-select: none; transition: background 0.15s, border-color 0.15s;">
-            <span style="font-size: 1rem; line-height: 1;">💬</span>
-            <span>Ask Wayne-AI</span>
-            <span id="pill-arrow-indicator" style="font-size: 0.6rem; color: #737373; margin-left: 2px;">▼</span>
+        <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
         </div>
 
-        <div id="wayne-chat-card" style="display: none; width: 320px; height: 450px; background: white; border: 1px solid #c8d3df; border-radius: 12px; box-shadow: 0px 10px 25px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; pointer-events: auto; margin-top: 8px;">
-            
-            <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.15);">
-                <span style="font-weight: bold; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
-            </div>
+        <div id="chat-feed-scroller" style="flex: 1; padding: 14px; overflow-y: auto; background: #ffffff; display: flex; flex-direction: column; border-bottom: 1px solid #e2e8f0;">
+            {chat_bubbles_html}
+        </div>
 
-            <div id="chat-feed-scroller" style="flex: 1; padding: 14px; overflow-y: auto; background: #ffffff; display: flex; flex-direction: column; border-bottom: 1px solid #e1e8ed;">
-                {chat_bubbles_html}
-            </div>
-
-            <div style="padding: 12px; background: #f4f7f9; display: flex; flex-direction: column; gap: 8px;">
-                <input id="chat-input-field" type="text" placeholder="Type your project question here..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
-                <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; width: 100%; transition: background 0.2s;">Send Message</button>
-            </div>
+        <div style="padding: 12px; background: #f8fafc; display: flex; flex-direction: column; gap: 8px;">
+            <input id="chat-input-field" type="text" placeholder="Ask about TxDOT item parameters..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 0.85rem; outline: none; background: white;" />
+            <button id="chat-send-btn" style="background: #1d6fa5; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; width: 100%; transition: background 0.15s;">Send Query</button>
         </div>
     </div>
 
     <script>
-        setTimeout(() => {{
-            const pill = document.getElementById('wayne-trigger-pill');
-            const card = document.getElementById('wayne-chat-card');
+        function runDOMInjectionPipeline() {{
+            const parentDoc = window.parent.document;
+            
+            // Query for Streamlit's native header trailing layout flexbox container
+            const nativeToolbar = parentDoc.querySelector('.stAppToolbar');
+            const targetPill = document.getElementById('wayne-toolbar-pill');
+            const targetCard = document.getElementById('wayne-chat-card');
+            
+            if (!nativeToolbar || !targetPill) {{
+                // Retry if components are still processing their initialization cycle
+                setTimeout(runDOMInjectionPipeline, 100);
+                return;
+            }}
+
+            // Prepend our interaction button right directly into the top row
+            nativeToolbar.insertBefore(targetPill, nativeToolbar.firstChild);
+            parentDoc.body.appendChild(targetCard);
+
             const scroller = document.getElementById('chat-feed-scroller');
             const btn = document.getElementById('chat-send-btn');
             const input = document.getElementById('chat-input-field');
@@ -284,15 +288,13 @@ st.components.v1.html(f"""
                 scroller.scrollTop = scroller.scrollHeight;
             }}
 
-            // Highlight pill on hover to match Streamlit native menu buttons
-            pill.addEventListener('mouseenter', () => {{
-                pill.style.background = '#f8fafc';
-                pill.style.borderColor = '#94a3b8';
+            // Native style matches for clean UI balance
+            targetPill.addEventListener('mouseenter', () => {{
+                targetPill.style.background = 'rgba(151, 166, 195, 0.15)';
             }});
-            pill.addEventListener('mouseleave', () => {{
-                if(card.style.display === 'none') {{
-                    pill.style.background = '#ffffff';
-                    pill.style.borderColor = '#cbd5e1';
+            targetPill.addEventListener('mouseleave', () => {{
+                if (targetCard.style.display !== 'flex') {{
+                    targetPill.style.background = 'transparent';
                 }}
             }});
 
@@ -310,20 +312,31 @@ st.components.v1.html(f"""
                 if(e.key === 'Enter') sendPayload();
             }});
 
-            pill.addEventListener('click', () => {{
-                if(card.style.display === 'none') {{
-                    card.style.display = 'flex';
-                    pill.style.background = '#f1f5f9';
-                    pill.style.borderColor = '#64748b';
+            targetPill.addEventListener('click', (e) => {{
+                e.stopPropagation();
+                if(targetCard.style.display === 'none' || !targetCard.style.display) {{
+                    // Dynamically lock dropdown placement right beneath our freshly injected header layout position
+                    const pillRect = targetPill.getBoundingClientRect();
+                    targetCard.style.top = (pillRect.bottom + 6) + 'px';
+                    targetCard.style.right = (parentDoc.documentElement.clientWidth - pillRect.right) + 'px';
+                    
+                    targetCard.style.display = 'flex';
+                    targetPill.style.background = 'rgba(151, 166, 195, 0.25)';
                     arrow.innerHTML = '▲';
-                    scroller.scrollTop = scroller.scrollHeight;
+                    if (scroller) scroller.scrollTop = scroller.scrollHeight;
                 }} else {{
-                    card.style.display = 'none';
-                    pill.style.background = '#ffffff';
-                    pill.style.borderColor = '#cbd5e1';
+                    targetCard.style.display = 'none';
+                    targetPill.style.background = 'transparent';
                     arrow.innerHTML = '▼';
                 }}
             }});
-        }}, 50);
+        }}
+
+        // Kick off the script tracking cycle as soon as iframe mounts
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {{
+            runDOMInjectionPipeline();
+        }} else {{
+            document.addEventListener('DOMContentLoaded', runDOMInjectionPipeline);
+        }}
     </script>
-""", height=550)
+""", height=0)
