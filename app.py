@@ -3,12 +3,17 @@ import os
 from pypdf import PdfReader
 import google.generativeai as genai
 
-# 1. SETUP: Configure the Free Google Brain
-if "GOOGLE_API_KEY" in st.secrets:
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    model = genai.GenerativeModel('gemini-1.5-flash')
+st.set_page_config(layout="wide")
 
-# 2. DATA: PDF Reading Engine (The "Brain")
+# 1. ROBUST SETUP
+if "GOOGLE_API_KEY" not in st.secrets:
+    st.error("Missing GOOGLE_API_KEY in Streamlit Secrets!")
+    st.stop()
+
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+# Using gemini-1.5-flash as it is fast and handles context well
+model = genai.GenerativeModel('gemini-1.5-flash')
+
 @st.cache_data
 def get_pdf_knowledge():
     full_text = ""
@@ -17,26 +22,40 @@ def get_pdf_knowledge():
             try:
                 reader = PdfReader(file)
                 for page in reader.pages:
-                    full_text += page.extract_text() + "\n"
-            except: continue
-    return full_text
+                    text = page.extract_text()
+                    if text: full_text += text + "\n"
+            except Exception: continue
+    # Safeguard: Send only the first 20,000 characters to avoid InvalidArgument (too long)
+    return full_text[:20000] 
 
-knowledge = get_pdf_knowledge()
+# Load the knowledge
+try:
+    knowledge = get_pdf_knowledge()
+except Exception as e:
+    st.error(f"Error reading PDFs: {e}")
+    knowledge = ""
 
-# 3. LAYOUT: Your Custom TxDOT Dashboard
-st.set_page_config(layout="wide")
+st.title("Wayne-AI: TxDOT Engineering Engine")
 
-# ... (Keep all your existing CSS and Custom HTML blocks here) ...
-
-# 4. INTEGRATION: When the user asks a question
+# Chat UI
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# When the user interacts with your TxDOT interface, send the data to the brain
-if user_input := st.chat_input("Ask about your TxDOT specs..."):
-    # Send user_input + knowledge to the Gemini AI
-    prompt = f"Use this TxDOT data: {knowledge}\n\nUser Question: {user_input}"
-    response = model.generate_content(prompt)
-    
-    # Display result
-    st.markdown(response.text)
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if prompt := st.chat_input("Ask about your TxDOT specs..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        try:
+            # Combined context + question
+            full_prompt = f"Context: {knowledge}\n\nQuestion: {prompt}"
+            response = model.generate_content(full_prompt)
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
+        except Exception as e:
+            st.error(f"AI Engine Error: {e}")
