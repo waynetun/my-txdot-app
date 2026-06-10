@@ -139,10 +139,6 @@ with container:
 # ---------- STYLING INJECTIONS & FLOATING VIEWPORT OVERRIDES ----------
 st.markdown("""
     <style>
-    /* CRITICAL ADJUSTMENT: Increased padding-top from 2rem to 4.5rem.
-       This pushes the TxDOT logo and app title down so that the toolbar 
-       elements never overlap or mask them.
-    */
     .block-container {
         padding-top: 4.5rem !important;
         padding-bottom: 2rem !important;
@@ -210,7 +206,7 @@ st.markdown("""
         border-radius: 20px;
     }
 
-    /* Keep the overlay iframe completely clear of the viewport layout grid */
+    /* Keep background execution layer transparent and pass clicks safely */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
         top: 0px !important;
@@ -242,13 +238,13 @@ for msg in st.session_state.chat_history:
 
 # ---------- PERSISTENT INJECTED COPTILOT WIDGET ----------
 st.components.v1.html(f"""
-    <div id="wayne-toolbar-pill" style="pointer-events: auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: #31333f; padding: 4px 10px; font-weight: 400; font-size: 0.875rem; cursor: pointer; border-radius: 8px; border: 1px solid transparent; height: 36px; box-sizing: border-box; user-select: none; transition: background 0.1s; margin-right: 4px;">
-        <span style="font-size: 1.05rem; display: flex; align-items: center;">💬</span>
-        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Ask Wayne-AI</span>
-        <span id="pill-arrow-indicator" style="font-size: 0.55rem; color: #737373; margin-left: 2px;">▼</span>
+    <div id="wayne-toolbar-pill" style="pointer-events: auto !important; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: #31333f; padding: 4px 10px; font-weight: 400; font-size: 0.875rem; cursor: pointer; border-radius: 8px; border: 1px solid transparent; height: 36px; box-sizing: border-box; user-select: none; transition: background 0.1s; margin-right: 4px; z-index: 999999999;">
+        <span style="font-size: 1.05rem; display: flex; align-items: center; pointer-events: none;">💬</span>
+        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; pointer-events: none;">Ask Wayne-AI</span>
+        <span id="pill-arrow-indicator" style="font-size: 0.55rem; color: #737373; margin-left: 2px; pointer-events: none;">▼</span>
     </div>
 
-    <div id="wayne-chat-card" style="pointer-events: auto; display: none; position: fixed; top: 50px; right: 20px; width: 340px; height: 480px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0px 8px 32px rgba(0,0,0,0.16); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 10000000;">
+    <div id="wayne-chat-card" style="pointer-events: auto !important; display: none; position: fixed; top: 50px; right: 20px; width: 340px; height: 480px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0px 8px 32px rgba(0,0,0,0.16); flex-direction: column; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; z-index: 10000000;">
         
         <div style="background: #2b3e50; padding: 12px 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.2px;">👤 Wayne-AI Workspace</span>
@@ -276,9 +272,16 @@ st.components.v1.html(f"""
                 return;
             }}
 
-            // Insert our custom button container neatly inside the toolbar flex-row
+            // Prepend our custom button container neatly inside the toolbar flex-row
             nativeToolbar.insertBefore(targetPill, nativeToolbar.firstChild);
             parentDoc.body.appendChild(targetCard);
+
+            // CRITICAL FIX: Ensure the parent container elements created by Streamlit 
+            // do not block mouse interaction events from executing.
+            if(nativeToolbar.parentElement) {{
+                nativeToolbar.parentElement.style.pointerEvents = 'auto';
+            }}
+            nativeToolbar.style.pointerEvents = 'auto';
 
             const scroller = document.getElementById('chat-feed-scroller');
             const btn = document.getElementById('chat-send-btn');
@@ -313,6 +316,7 @@ st.components.v1.html(f"""
             }});
 
             targetPill.addEventListener('click', (e) => {{
+                e.preventDefault();
                 e.stopPropagation();
                 if(targetCard.style.display === 'none' || !targetCard.style.display) {{
                     const pillRect = targetPill.getBoundingClientRect();
@@ -330,11 +334,3 @@ st.components.v1.html(f"""
                 }}
             }});
         }}
-
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {{
-            runDOMInjectionPipeline();
-        }} else {{
-            document.addEventListener('DOMContentLoaded', runDOMInjectionPipeline);
-        }}
-    </script>
-""", height=0)
