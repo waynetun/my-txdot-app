@@ -1,96 +1,60 @@
-from flask import Flask, render_template_string
+import streamlit as st
 
-app = Flask(__name__)
+st.set_page_config(page_title="Pro-CWII Help Center", layout="wide")
 
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; max-width: 900px; margin: auto; padding: 20px; color: #333; }
-        header { border-bottom: 3px solid #003366; padding-bottom: 10px; margin-bottom: 20px; }
-        nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
-        button { padding: 10px 15px; border: 1px solid #ccc; cursor: pointer; border-radius: 4px; background: #f0f0f0; }
-        .active { background: #003366; color: white; }
-        h2 { color: #003366; }
-        h3 { color: #d35400; border-bottom: 1px solid #ddd; margin-top: 30px; }
-        h4 { color: #555; margin-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)</h1>
-    </header>
+st.title("TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)")
+st.header("Welcome to the Help Page")
+st.write("Welcome to the Pro-CWII Help Center! This page provides comprehensive guidance on using the tool effectively. Whether you're a first-time user or need a quick refresher, you'll find all the information you need here.")
 
-    <nav>
-        <button>Home</button>
-        <button class="active">Help</button>
-        <button>Sample</button>
-        <button>Find Similar Projects</button>
-        <button>Identify Missing Items</button>
-        <button>Verify Major Quantities</button>
-    </nav>
+# User Manual
+st.subheader("📘 User Manual")
+st.write("Our comprehensive user manual contains detailed information about:")
+st.markdown("""
+* Tool features and capabilities
+* Step-by-step usage instructions
+* Best practices for data preparation
+* Understanding and interpreting results
+* Troubleshooting common issues
+""")
 
-    <h2>Welcome to the Help Page</h2>
-    <p>Welcome to the Pro-CWII Help Center! This page provides comprehensive guidance on using the tool effectively. Whether you're a first-time user or need a quick refresher, you'll find all the information you need here.</p>
+# Quick Start
+st.subheader("🚀 Quick Start Guide")
+st.write("**Step 1: Prepare Your Data**")
+st.markdown("""
+* Download the sample template to understand the required format
+* Ensure your Excel file contains these columns: **ItemCode** (8-digit), **Quantity** (numeric), **UnitPrice** (numeric)
+* Save your file in standard Excel format (.xlsx)
+""")
+st.write("**Step 2: Choose Your Analysis**")
+st.write("Find Similar Projects, Identify Missing Work Items, or Verify Quantities for Major Pay Items.")
+st.write("**Step 3: Get Results**")
+st.write("Upload your prepared Excel file, review the results, and download your detailed report.")
 
-    <h3>📘 User Manual</h3>
-    <p>Our comprehensive user manual contains detailed information about:</p>
-    <ul>
-        <li>Tool features and capabilities</li>
-        <li>Step-by-step usage instructions</li>
-        <li>Best practices for data preparation</li>
-        <li>Understanding and interpreting results</li>
-        <li>Troubleshooting common issues</li>
-    </ul>
+# Common Issues
+st.subheader("🔧 Common Issues and Solutions")
+st.markdown("""
+| Category | Problem | Solution |
+| :--- | :--- | :--- |
+| File Upload | "Invalid file format" | Ensure file is .xlsx (not .xls or Strict Open XML) |
+| File Upload | "Incorrect column format" | Verify columns: ItemCode, Quantity, UnitPrice |
+| File Upload | "Empty file" | Check that your file contains data |
+| Analysis | No similar projects found | Try adjusting the district or project type filters |
+| Analysis | Unexpected results | Verify item codes match TxDOT's 2014 specs |
+| Email | Results not received | Check spam folder and verify email address |
+""")
 
-    <h3>🚀 Quick Start Guide</h3>
-    <h4>Step 1: Prepare Your Data</h4>
-    <ul>
-        <li>Download the sample template to understand the required format</li>
-        <li>Ensure your Excel file contains these columns: ItemCode (8-digit TxDOT item code), Quantity (numeric), UnitPrice (numeric)</li>
-        <li>Save your file in standard Excel format (.xlsx)</li>
-    </ul>
-    <h4>Step 2: Choose Your Analysis</h4>
-    <ul>
-        <li>Find Similar Projects</li>
-        <li>Identify Missing Work Items</li>
-        <li>Verify Quantities for Major Pay Items</li>
-    </ul>
-    <h4>Step 3: Get Results</h4>
-    <ul>
-        <li>Upload your prepared Excel file</li>
-        <li>Review the analysis results</li>
-        <li>Download the detailed report or receive results via email</li>
-    </ul>
+# Best Practices
+st.subheader("💡 Best Practices")
+st.write("**Data Preparation:** Use latest Excel, remove formatting/formulas, ensure numeric values.")
+st.write("**Analysis Tips:** Start with broad searches, prioritize high-probability missing items, and review similar project patterns.")
+st.write("**Getting Best Results:** Include complete project info, use accurate item codes, and review the sample file.")
 
-    <h3>🔧 Common Issues and Solutions</h3>
-    <table>
-        <tr><th>Category</th><th>Problem</th><th>Solution</th></tr>
-        <tr><td>File Upload</td><td>"Invalid file format"</td><td>Ensure your file is saved as .xlsx</td></tr>
-        <tr><td>File Upload</td><td>"Incorrect column format"</td><td>Verify columns: ItemCode, Quantity, UnitPrice</td></tr>
-        <tr><td>Analysis</td><td>No similar projects found</td><td>Try adjusting the district or project type filters</td></tr>
-        <tr><td>Email</td><td>Results not received</td><td>Check spam folder and verify email address</td></tr>
-    </table>
+# Contact
+st.divider()
+st.subheader("📞 Need More Help?")
+st.write("If you're still experiencing issues or have questions not covered here:")
+st.write("1. Review the comprehensive user manual")
+st.write("2. Check the sample file for proper formatting")
+st.write("3. Email us at [txdottamu@gmail.com](mailto:txdottamu@gmail.com)")
 
-    <h3>💡 Best Practices</h3>
-    <ul>
-        <li><strong>Data Preparation:</strong> Remove formatting/formulas; ensure all item codes are numeric and correct.</li>
-        <li><strong>Analysis Tips:</strong> Start with a broad search; prioritize items with high probability of being missed.</li>
-    </ul>
-
-    <h3>📞 Need More Help?</h3>
-    <p>If you're still experiencing issues, review the user manual or email us at <a href="mailto:txdottamu@gmail.com">txdottamu@gmail.com</a>.</p>
-</body>
-</html>
-"""
-
-@app.route('/')
-def home():
-    return render_template_string(HTML_TEMPLATE)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+st.success("Thank you for using Pro-CWII! We're here to help you succeed with your TxDOT projects.")
