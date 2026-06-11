@@ -2,60 +2,55 @@ import streamlit as st
 import base64
 import os
 
-# 1. Page Configuration
+# 1. Setup
 st.set_page_config(layout="wide")
 
-# 2. State Initialization
+# 2. Page Controller State
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Dashboard"
 
-# --- HELP PAGE FUNCTION ---
+# 3. Help Page Function
 def show_help_page():
-    left, container, right = st.columns([0.5, 5, 0.5])
+    # Maintain your dashboard's column-based layout
+    _, container, _ = st.columns([0.5, 5, 0.5])
     with container:
-        st.title("📘 Pro-CWII Help Center")
-        st.write("Welcome to the Pro-CWII Help Center. Find guidance below.")
+        st.markdown("<h1 style='color: #000000;'>📘 Pro-CWII Help Center</h1>", unsafe_allow_html=True)
         
         with st.expander("🚀 Quick Start Guide"):
             st.markdown("""
-            **Step 1: Prepare Your Data**
-            - Ensure your Excel file contains columns: `ItemCode`, `Quantity`, `UnitPrice`.
-            - Save in `.xlsx` format.
-            
-            **Step 2: Choose Your Analysis**
-            - Select: Similar Projects, Missing Items, or Verify Quantities.
-            
-            **Step 3: Get Results**
-            - Upload, review results, and download your report.
+            **Step 1: Data Prep** - Use `ItemCode`, `Quantity`, `UnitPrice` in .xlsx.
+            **Step 2: Analysis** - Choose your desired tool from the main menu.
+            **Step 3: Results** - Upload, review, and download.
             """)
-            
-        with st.expander("🔧 Common Issues & Solutions"):
-            st.error("Invalid Format: Use .xlsx files only.")
-            st.warning("Analysis: Try adjusting your filters if no projects are found.")
+        
+        with st.expander("🔧 Common Issues"):
+            st.error("Format error: Only .xlsx files allowed.")
+            st.warning("Analysis error: Verify your item codes.")
             
         if st.button("← Back to Dashboard"):
             st.session_state.current_page = "Dashboard"
             st.rerun()
 
-# --- DASHBOARD FUNCTION ---
+# 4. Dashboard Function (Your Existing Logic)
 def show_dashboard():
-    # ... [YOUR EXISTING DASHBOARD LOGIC GOES HERE] ...
-    # IMPORTANT: Locate your 'Help' icon and wrap it in a button:
-    if st.button("Help"):
+    # (Put all your current dashboard layout code here)
+    st.title("TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)")
+    
+    # Navigation Buttons Example:
+    if st.button("Open Help"):
         st.session_state.current_page = "Help"
         st.rerun()
-    st.write("Welcome to the Pro-CWII Dashboard.")
 
-# --- ROUTER ---
+# 5. Router Logic
 if st.session_state.current_page == "Dashboard":
     show_dashboard()
 elif st.session_state.current_page == "Help":
     show_help_page()
 
-# --- GLOBAL CSS ---
+# 6. Global CSS (Must be flush left to avoid blank page)
 st.markdown("""
 <style>
 .block-container { padding-top: 2rem !important; }
-/* ... [KEEP YOUR EXISTING CSS HERE] ... */
+.chat-header { background: #0f172a; padding: 20px; border-radius: 12px; color: white; }
 </style>
 """, unsafe_allow_html=True)
