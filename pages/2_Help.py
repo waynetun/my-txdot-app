@@ -2,52 +2,47 @@ import streamlit as st
 import base64
 import os
 
-# 1. Setup
-st.set_page_config(layout="wide")
+# 1. Page Configuration
+st.set_page_config(layout="wide", page_title="Pro-CWII")
 
-# 2. Page Controller State
+# 2. State Initialization
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Dashboard"
 
-# 3. Help Page Function
+# 3. Help Page Content
 def show_help_page():
-    # Maintain your dashboard's column-based layout
+    # Keep the same layout columns as your dashboard
     _, container, _ = st.columns([0.5, 5, 0.5])
     with container:
-        st.markdown("<h1 style='color: #000000;'>📘 Pro-CWII Help Center</h1>", unsafe_allow_html=True)
+        st.title("📘 Pro-CWII Help Center")
         
         with st.expander("🚀 Quick Start Guide"):
-            st.markdown("""
-            **Step 1: Data Prep** - Use `ItemCode`, `Quantity`, `UnitPrice` in .xlsx.
-            **Step 2: Analysis** - Choose your desired tool from the main menu.
-            **Step 3: Results** - Upload, review, and download.
-            """)
+            st.markdown("1. Prepare Data... 2. Analyze... 3. Get Results.")
         
-        with st.expander("🔧 Common Issues"):
-            st.error("Format error: Only .xlsx files allowed.")
-            st.warning("Analysis error: Verify your item codes.")
-            
+        with st.expander("🔧 Troubleshooting"):
+            st.error("Format error: Use .xlsx only.")
+
         if st.button("← Back to Dashboard"):
             st.session_state.current_page = "Dashboard"
             st.rerun()
 
-# 4. Dashboard Function (Your Existing Logic)
+# 4. Main Dashboard (Keep your existing layout code here)
 def show_dashboard():
-    # (Put all your current dashboard layout code here)
+    # --- YOUR EXISTING DASHBOARD CODE ---
     st.title("TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)")
     
-    # Navigation Buttons Example:
-    if st.button("Open Help"):
+    # Navigation example: 
+    if st.button("Help"):
         st.session_state.current_page = "Help"
         st.rerun()
 
-# 5. Router Logic
+# 5. Routing Logic (The "Brain" of your app)
 if st.session_state.current_page == "Dashboard":
     show_dashboard()
 elif st.session_state.current_page == "Help":
     show_help_page()
 
-# 6. Global CSS (Must be flush left to avoid blank page)
+# 6. GLOBAL CSS (CRITICAL: MUST BE FLUSH LEFT)
 st.markdown("""
 <style>
 .block-container { padding-top: 2rem !important; }
