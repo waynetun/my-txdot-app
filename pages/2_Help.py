@@ -1,80 +1,96 @@
-import streamlit as st
-import base64
-import os
+from flask import Flask, render_template_string
 
-st.set_page_config(layout="wide")
+app = Flask(__name__)
 
-# 1. Navigation Bar with Glass Icons
-def get_image_base64(path):
-    if os.path.exists(path):
-        with open(path, "rb") as image_file:
-            return f"data:image/png;base64,{base64.b64encode(image_file.read()).decode()}"
-    return ""
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 900px; margin: auto; padding: 20px; color: #333; }
+        header { border-bottom: 3px solid #003366; padding-bottom: 10px; margin-bottom: 20px; }
+        nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        button { padding: 10px 15px; border: 1px solid #ccc; cursor: pointer; border-radius: 4px; background: #f0f0f0; }
+        .active { background: #003366; color: white; }
+        h2 { color: #003366; }
+        h3 { color: #d35400; border-bottom: 1px solid #ddd; margin-top: 30px; }
+        h4 { color: #555; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TxDOT - Proactive Construction Work Item Identifier (Pro-CWII)</h1>
+    </header>
 
-home_b64 = get_image_base64("HomeCopilot.png")
-help_b64 = get_image_base64("HelpCoPilot.png")
+    <nav>
+        <button>Home</button>
+        <button class="active">Help</button>
+        <button>Sample</button>
+        <button>Find Similar Projects</button>
+        <button>Identify Missing Items</button>
+        <button>Verify Major Quantities</button>
+    </nav>
 
-st.markdown("""
-<style>
-.glass-icon-container { display: flex; gap: 16px; margin-bottom: 30px; }
-.glass-icon-item {
-    background: rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    width: 60px;
-}
-</style>
-<div class="glass-icon-container">
-    <a href="/" class="glass-icon-item"><img src="data:image/png;base64,{home_b64}" style="width:100%"></a>
-    <div class="glass-icon-item"><img src="data:image/png;base64,{help_b64}" style="width:100%"></div>
-</div>
-""", unsafe_allow_html=True)
+    <h2>Welcome to the Help Page</h2>
+    <p>Welcome to the Pro-CWII Help Center! This page provides comprehensive guidance on using the tool effectively. Whether you're a first-time user or need a quick refresher, you'll find all the information you need here.</p>
 
-# 2. Help Page Content
-_, container, _ = st.columns([0.5, 5, 0.5])
+    <h3>📘 User Manual</h3>
+    <p>Our comprehensive user manual contains detailed information about:</p>
+    <ul>
+        <li>Tool features and capabilities</li>
+        <li>Step-by-step usage instructions</li>
+        <li>Best practices for data preparation</li>
+        <li>Understanding and interpreting results</li>
+        <li>Troubleshooting common issues</li>
+    </ul>
 
-with container:
-    st.title("Welcome to the Help Page")
-    st.markdown("Welcome to the Pro-CWII Help Center! This page provides comprehensive guidance on using the tool effectively. Whether you're a first-time user or need a quick refresher, you'll find all the information you need here.")
-    st.divider()
+    <h3>🚀 Quick Start Guide</h3>
+    <h4>Step 1: Prepare Your Data</h4>
+    <ul>
+        <li>Download the sample template to understand the required format</li>
+        <li>Ensure your Excel file contains these columns: ItemCode (8-digit TxDOT item code), Quantity (numeric), UnitPrice (numeric)</li>
+        <li>Save your file in standard Excel format (.xlsx)</li>
+    </ul>
+    <h4>Step 2: Choose Your Analysis</h4>
+    <ul>
+        <li>Find Similar Projects</li>
+        <li>Identify Missing Work Items</li>
+        <li>Verify Quantities for Major Pay Items</li>
+    </ul>
+    <h4>Step 3: Get Results</h4>
+    <ul>
+        <li>Upload your prepared Excel file</li>
+        <li>Review the analysis results</li>
+        <li>Download the detailed report or receive results via email</li>
+    </ul>
 
-    st.header("📘 User Manual")
-    st.markdown("""Our comprehensive user manual contains detailed information about:
-    - Tool features and capabilities
-    - Step-by-step usage instructions
-    - Best practices for data preparation
-    - Understanding and interpreting results
-    - Troubleshooting common issues""")
-    st.divider()
+    <h3>🔧 Common Issues and Solutions</h3>
+    <table>
+        <tr><th>Category</th><th>Problem</th><th>Solution</th></tr>
+        <tr><td>File Upload</td><td>"Invalid file format"</td><td>Ensure your file is saved as .xlsx</td></tr>
+        <tr><td>File Upload</td><td>"Incorrect column format"</td><td>Verify columns: ItemCode, Quantity, UnitPrice</td></tr>
+        <tr><td>Analysis</td><td>No similar projects found</td><td>Try adjusting the district or project type filters</td></tr>
+        <tr><td>Email</td><td>Results not received</td><td>Check spam folder and verify email address</td></tr>
+    </table>
 
-    st.header("🚀 Quick Start Guide")
-    st.subheader("Step 1: Prepare Your Data")
-    st.markdown("- Download the sample template to understand the required format\n- Ensure your Excel file contains these columns: `ItemCode` (8-digit TxDOT item code), `Quantity` (numeric value), `UnitPrice` (numeric value)\n- Save your file in standard Excel format aka .xlsx format (not Strict Open XML)")
-    st.subheader("Step 2: Choose Your Analysis")
-    st.markdown("- Find Similar Projects\n- Identify Missing Work Items\n- Verify Quantities for Major Pay Items")
-    st.subheader("Step 3: Get Results")
-    st.markdown("- Upload your prepared Excel file\n- Review the analysis results\n- Download the detailed report\n- Optionally, receive results via email")
-    st.divider()
+    <h3>💡 Best Practices</h3>
+    <ul>
+        <li><strong>Data Preparation:</strong> Remove formatting/formulas; ensure all item codes are numeric and correct.</li>
+        <li><strong>Analysis Tips:</strong> Start with a broad search; prioritize items with high probability of being missed.</li>
+    </ul>
 
-    st.header("🔧 Common Issues and Solutions")
-    st.subheader("File Upload Issues")
-    st.markdown("- **Problem:** \"Invalid file format\" error. **Solution:** Ensure your file is saved as .xlsx (not .xls or Strict Open XML)\n- **Problem:** \"Incorrect column format\" error. **Solution:** Verify your columns are named exactly: ItemCode, Quantity, UnitPrice\n- **Problem:** \"Empty file\" error. **Solution:** Check that your file contains data and is not corrupted")
-    st.subheader("Analysis Issues")
-    st.markdown("- **Problem:** No similar projects found. **Solution:** Try adjusting the district or project type filters\n- **Problem:** Unexpected results. **Solution:** Verify your item codes match TxDOT's 2014 specifications")
-    st.subheader("Email Issues")
-    st.markdown("- **Problem:** Results email not received. **Solution:** Check your spam folder and verify the email address")
-    st.divider()
+    <h3>📞 Need More Help?</h3>
+    <p>If you're still experiencing issues, review the user manual or email us at <a href="mailto:txdottamu@gmail.com">txdottamu@gmail.com</a>.</p>
+</body>
+</html>
+"""
 
-    st.header("💡 Best Practices")
-    st.subheader("Data Preparation")
-    st.markdown("- Use the latest version of Excel\n- Remove any formatting or formulas from your data\n- Ensure all item codes are correct\n- Verify quantities and unit prices are numeric values")
-    st.subheader("Analysis Tips")
-    st.markdown("- When searching for similar projects, start with a broad search, then narrow down using filters\n- When identifying missing work items, prioritize work items with a high probability of being missed\n- Review similar projects to understand common patterns\n- Use the email feature or the download button to save results for future reference")
-    st.subheader("Getting the Best Results")
-    st.markdown("- Include complete project information\n- Use accurate item codes from TxDOT specifications\n- Consider both construction and maintenance projects\n- Review the sample file for proper formatting")
-    st.divider()
+@app.route('/')
+def home():
+    return render_template_string(HTML_TEMPLATE)
 
-    st.header("📞 Need More Help?")
-    st.markdown("If you're still experiencing issues or have questions not covered here:\n- Review the comprehensive user manual\n- Check the sample file for proper formatting\n- email us at txdottamu@gmail.com")
+if __name__ == '__main__':
+    app.run(debug=True)
