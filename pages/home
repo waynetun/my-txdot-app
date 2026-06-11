@@ -1,0 +1,7 @@
+import streamlit as st
+
+st.title("TxDOT - Pro-CWII")
+
+# Use these instead of manual HTML buttons
+st.page_link("pages/1_Help.py", label="Help", icon="ℹ️")
+st.page_link("pages/2_Sample_Data.py", label="Sample Data", icon="📊")
